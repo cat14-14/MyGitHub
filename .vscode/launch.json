@@ -1,0 +1,13 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "C/C++ Runner: Debug Session",
+      "type": "lldb",
+      "request": "launch",
+      "args": [],
+      "cwd": "/Users/gim-eunho/Desktop/깃허브/6월/3주차/C언어",
+      "program": "/Users/gim-eunho/Desktop/깃허브/6월/3주차/C언어/build/Debug/outDebug"
+    }
+  ]
+}
