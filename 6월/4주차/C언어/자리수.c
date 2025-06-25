@@ -8,6 +8,10 @@ int main()
 
     int highest_place = 1;
 
+    if (num < 0)
+    {
+        num = -num;
+    }
     if (num == 0)
     {
         printf("0입니다.\n");
@@ -17,7 +21,7 @@ int main()
     while (num >= 10)
     {
         num = num / 10;
-        highest_place *= 10;
+        highest_place += 1;
     }
 
     printf("%d의 자리\n", highest_place);

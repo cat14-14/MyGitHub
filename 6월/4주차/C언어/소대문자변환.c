@@ -7,7 +7,7 @@ int main(void)
     int n = strlen(s);
     for(int i = 0; i<n; i++)
     {
-        if(s[i]>=65 && s[i]<97)
+        if(s[i]>=65 && s[i]<91)
         {
             printf("%c", s[i] + 32);
         }
@@ -16,3 +16,4 @@ int main(void)
         }
     }
 }
+
