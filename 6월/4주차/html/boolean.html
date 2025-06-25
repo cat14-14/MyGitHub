@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>불대수 단계별 풀이 & 카르노맵</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css">
+    <style>
+        /* Global */
+        :root {
+            --primary: #4caf50;
+            --bg: #f5f5f5;
+            --card: #fff;
+            --text: #333;
+            --border: #ccc;
+            --shadow: rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        .container {
+            max-width: 960px;
+            margin: 40px auto;
+            background: var(--card);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px var(--shadow);
+            padding: 24px;
+        }
+
+        h1 {
+            margin-top: 0;
+            text-align: center;
+            color: var(--primary);
+        }
+
+        /* Input */
+        .input-box {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .input-box input {
+            flex: 1;
+            padding: 12px 16px;
+            font-size: 16px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+        }
+
+        .input-box button {
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .input-box button:hover {
+            background: #43a047;
+        }
+
+        /* Mode toggle */
+        .mode-box {
+            display: flex;
+            gap: 24px;
+            margin-bottom: 24px;
+            justify-content: center;
+        }
+
+        .mode-box label {
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        /* Results */
+        .result-box,
+        .kmap-box {
+            background: var(--card);
+            padding: 16px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            min-height: 240px;
+            overflow-x: auto;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .kmap-box table {
+            border-collapse: collapse;
+            margin: 0 auto;
+        }
+
+        .kmap-box th,
+        .kmap-box td {
+            border: 1px solid var(--border);
+            padding: 8px 12px;
+            text-align: center;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* Controls */
+        .controls {
+            margin-top: 24px;
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .controls button {
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .controls button:disabled {
+            background: #aaa;
+            cursor: default;
+        }
+
+        .controls button:hover:not(:disabled) {
+            background: #43a047;
+        }
+
+        @media(max-width:600px) {
+            .input-box {
+                flex-direction: column;
+            }
+
+            .controls {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>불대수 단계별 풀이 & 카르노맵</h1>
+        <div class="input-box">
+            <input type="text" id="inputExpr" placeholder="불식을 입력하세요 (예: (A+B)' 또는 A*B+C)">
+            <button id="searchBtn">검색</button>
+        </div>
+        <div class="mode-box">
+            <label><input type="radio" name="mode" value="text" checked> 텍스트 풀이</label>
+            <label><input type="radio" name="mode" value="kmap"> 카르노맵</label>
+        </div>
+        <div id="textResult" class="result-box"></div>
+        <div id="kmapResult" class="kmap-box hidden"></div>
+        <div class="controls">
+            <button id="prevBtn">이전 단계</button>
+            <button id="nextBtn">다음 단계</button>
+        </div>
+    </div>
+    <script>
+        // Core Classes and Functions
+        class Node {
+            constructor(type, value, left = null, right = null) {
+                this.type = type;
+                this.value = value;
+                this.left = left;
+                this.right = right;
+            }
+            clone() { return deepCopy(this); }
+            toString() {
+                if (this.type === 'var') return this.value;
+                if (this.type === 'not') return this.value.toString() + "'";
+                const op = this.type === 'and' ? '*' : '+';
+                return `(${this.left.toString()}${op}${this.right.toString()})`;
+            }
+        }
+        function deepCopy(node) {
+            if (!node) return null;
+            return new Node(
+                node.type,
+                node.value,
+                deepCopy(node.left),
+                deepCopy(node.right)
+            );
+        }
+
+        function tokenize(str) {
+            const tokens = [];
+            for (let ch of str) {
+                if (ch === ' ') continue;
+                if (/[A-Z]/.test(ch) || /[()+*']/.test(ch)) tokens.push(ch);
+                else throw new Error('허용되지 않는 문자: ' + ch);
+            }
+            return tokens;
+        }
+
+        function parse(tokens) {
+            let pos = 0;
+            function parseExpr() {
+                let node = parseTerm();
+                while (tokens[pos] === '+') {
+                    pos++;
+                    node = new Node('or', '+', node, parseTerm());
+                }
+                return node;
+            }
+            function parseTerm() {
+                let node = parseFactor();
+                while (tokens[pos] === '*' || /[A-Z(]/.test(tokens[pos])) {
+                    if (tokens[pos] === '*') pos++;
+                    node = new Node('and', '*', node, parseFactor());
+                }
+                return node;
+            }
+            function parseFactor() {
+                const t = tokens[pos];
+                if (t === '(') {
+                    pos++;
+                    const node = parseExpr();
+                    if (tokens[pos] !== ')') throw new Error('괄호 오류');
+                    pos++;
+                    if (tokens[pos] === "'") { pos++; return new Node('not', node); }
+                    return node;
+                }
+                if (/[A-Z]/.test(t)) {
+                    pos++;
+                    let v = new Node('var', t);
+                    if (tokens[pos] === "'") { pos++; v = new Node('not', v); }
+                    return v;
+                }
+                throw new Error('토큰 오류: ' + t);
+            }
+            const root = parseExpr();
+            if (pos !== tokens.length) throw new Error('불완전 파싱: 남은 토큰 ' + tokens.slice(pos).join(''));
+            return root;
+        }
+
+        function collectVars(node, set = new Set()) {
+            if (!node) return set;
+            if (node.type === 'var') set.add(node.value);
+            if (node.type === 'not') collectVars(node.value, set);
+            if (node.left) collectVars(node.left, set);
+            if (node.right) collectVars(node.right, set);
+            return set;
+        }
+
+        function evalTree(node, assign) {
+            switch (node.type) {
+                case 'var': return !!assign[node.value];
+                case 'not': return !evalTree(node.value, assign);
+                case 'and': return evalTree(node.left, assign) && evalTree(node.right, assign);
+                case 'or': return evalTree(node.left, assign) || evalTree(node.right, assign);
+            }
+        }
+
+        function makeTable(vars, tree) {
+            const table = [];
+            for (let i = 0; i < (1 << vars.length); i++) {
+                const assign = {};
+                vars.forEach((v, idx) => assign[v] = !!(i & (1 << (vars.length - idx - 1))));
+                table.push({ assign, val: evalTree(tree, assign) });
+            }
+            return table;
+        }
+
+        // Transformation Rules
+        const rules = [
+            {
+                name: '이중부정법칙', apply: node => node.type === 'not' && node.value.type === 'not' ? {
+                    node: node.value.value.clone(),
+                    desc: [`원식: ${node.toString()}`, `(X')' = X 적용 => ${node.value.value.toString()}`]
+                } : null
+            },
+            {
+                name: '드모르간법칙', apply: node => node.type === 'not' && (node.value.type === 'or' || node.value.type === 'and') ? (() => {
+                    const inner = node.value, A = inner.left.clone(), B = inner.right.clone();
+                    const nA = new Node('not', A), nB = new Node('not', B);
+                    const newType = inner.type === 'or' ? 'and' : 'or';
+                    const op = newType === 'and' ? '*' : '+';
+                    const newN = new Node(newType, op, nA, nB);
+                    return {
+                        node: newN, desc: [
+                            `원식: ${node.toString()}`,
+                            `드모르간: ¬(P∨Q)=¬P∧¬Q`,
+                            `내부: (${inner.left.toString()}+${inner.right.toString()})' => ${nA.toString()}${op}${nB.toString()}`,
+                            `결과: ${newN.toString()}`
+                        ]
+                    };
+                })() : null
+            },
+            {
+                name: '멱등법칙', apply: node => (node.type === 'or' || node.type === 'and') && node.left.toString() === node.right.toString() ? {
+                    node: node.left.clone(),
+                    desc: [`원식: ${node.toString()}`, `멱등: X${node.type === 'or' ? '+' : '*'}X=X => ${node.left.toString()}`]
+                } : null
+            },
+            {
+                name: '보법칙', apply: node => {
+                    if (node.type === 'or' && (node.left.toString() + "'" === node.right.toString() || node.right.toString() + "'" === node.left.toString()))
+                        return { node: new Node('var', '1'), desc: [`원식: ${node.toString()}`, `X+X'=1 => 1`] };
+                    if (node.type === 'and' && (node.left.toString() + "'" === node.right.toString() || node.right.toString() + "'" === node.left.toString()))
+                        return { node: new Node('var', '0'), desc: [`원식: ${node.toString()}`, `X*X'=0 => 0`] };
+                    return null;
+                }
+            },
+            {
+                name: '항등법칙', apply: node => {
+                    if (node.type === 'or' && node.left.type === 'var' && node.left.value === '0')
+                        return { node: node.right.clone(), desc: [`원식: ${node.toString()}`, `0+X=X => ${node.right.toString()}`] };
+                    if (node.type === 'or' && node.right.type === 'var' && node.right.value === '0')
+                        return { node: node.left.clone(), desc: [`원식: ${node.toString()}`, `X+0=X => ${node.left.toString()}`] };
+                    if (node.type === 'and' && node.left.type === 'var' && node.left.value === '1')
+                        return { node: node.right.clone(), desc: [`원식: ${node.toString()}`, `1*X=X => ${node.right.toString()}`] };
+                    if (node.type === 'and' && node.right.type === 'var' && node.right.value === '1')
+                        return { node: node.left.clone(), desc: [`원식: ${node.toString()}`, `X*1=X => ${node.left.toString()}`] };
+                    return null;
+                }
+            },
+            {
+                name: '지배법칙', apply: node => {
+                    if (node.type === 'or' && (node.left.type === 'var' && node.left.value === '1' || node.right.type === 'var' && node.right.value === '1'))
+                        return { node: new Node('var', '1'), desc: [`원식: ${node.toString()}`, `X+1=1 => 1`] };
+                    if (node.type === 'and' && (node.left.type === 'var' && node.left.value === '0' || node.right.type === 'var' && node.right.value === '0'))
+                        return { node: new Node('var', '0'), desc: [`원식: ${node.toString()}`, `X*0=0 => 0`] };
+                    return null;
+                }
+            },
+            {
+                name: '흡수법칙', apply: node => {
+                    if (node.type === 'or' && node.right.type === 'and' && (node.left.toString() === node.right.left.toString() || node.left.toString() === node.right.right.toString()))
+                        return { node: node.left.clone(), desc: [`원식: ${node.toString()}`, `X+X*Y=X => ${node.left.toString()}`] };
+                    if (node.type === 'and' && node.right.type === 'or' && (node.left.toString() === node.right.left.toString() || node.left.toString() === node.right.right.toString()))
+                        return { node: node.left.clone(), desc: [`원식: ${node.toString()}`, `X*(X+Y)=X => ${node.left.toString()}`] };
+                    return null;
+                }
+            },
+            {
+                name: '분배법칙', apply: node => {
+                    if (node.type === 'and' && node.right.type === 'or') {
+                        const X = node.left.clone(), Y = node.right.left.clone(), Z = node.right.right.clone();
+                        const left = new Node('and', '*', X.clone(), Y);
+                        const right = new Node('and', '*', X.clone(), Z);
+                        const newN = new Node('or', '+', left, right);
+                        return { node: newN, desc: [`원식: ${node.toString()}`, `분배 X*(Y+Z)=X*Y+X*Z => ${newN.toString()}`] };
+                    }
+                    if (node.type === 'and' && node.left.type === 'or') {
+                        const Y = node.left.left.clone(), Z = node.left.right.clone(), X = node.right.clone();
+                        const left = new Node('and', '*', Y, X.clone());
+                        const right = new Node('and', '*', Z, X.clone());
+                        const newN = new Node('or', '+', left, right);
+                        return { node: newN, desc: [`원식: ${node.toString()}`, `분배 (Y+Z)*X=Y*X+Z*X => ${newN.toString()}`] };
+                    }
+                    return null;
+                }
+            }
+        ];
+
+        function applyRules(tree) {
+            const history = [];
+            let changed = true;
+            let cur = tree.clone();
+            while (changed) {
+                changed = false;
+                for (let rule of rules) {
+                    const found = (function rec(n, p, s) {
+                        if (!n) return null;
+                        const r = rule.apply(n);
+                        if (r) return { r, p, s };
+                        return rec(n.left, n, 'left') || rec(n.right, n, 'right');
+                    })(cur, null, null);
+                    if (found) {
+                        const { r, p, s } = found;
+                        if (p) p[s] = r.node;
+                        else cur = r.node;
+                        r.desc.forEach(d => history.push({ rule: rule.name, desc: d, tree: cur.clone() }));
+                        changed = true;
+                        break;
+                    }
+                }
+            }
+            return history;
+        }
+
+        function renderKMap(vars, table) {
+            const n = vars.length;
+            if (n < 2 || n > 4) return '2~4변수만 지원합니다';
+            let rows, cols;
+            if (n === 2) { rows = 2; cols = 2; }
+            else if (n === 3) { rows = 2; cols = 4; }
+            else { rows = 4; cols = 4; }
+            const gray = [0, 1, 3, 2];
+            let html = '<table><tr><th></th>';
+            for (let c = 0; c < cols; c++) html += `<th>${gray[c]}</th>`;
+            html += '</tr>';
+            for (let r = 0; r < rows; r++) {
+                html += `<tr><th>${gray[r]}</th>`;
+                for (let c = 0; c < cols; c++) html += `<td>${table[r * cols + c].val ? 1 : 0}</td>`;
+                html += '</tr>';
+            }
+            html += '</table>';
+            return html;
+        }
+
+        // UI Logic
+        const inp = document.getElementById('inputExpr');
+        const btn = document.getElementById('searchBtn');
+        const tRes = document.getElementById('textResult');
+        const kRes = document.getElementById('kmapResult');
+        const modes = document.getElementsByName('mode');
+        let historyList = [], pos = 0;
+
+        btn.addEventListener('click', () => {
+            const raw = inp.value.trim();
+            const mode = [...modes].find(r => r.checked).value;
+            tRes.textContent = '';
+            kRes.innerHTML = '';
+            tRes.classList.toggle('hidden', mode !== 'text');
+            kRes.classList.toggle('hidden', mode !== 'kmap');
+            try {
+                const tokens = tokenize(raw);
+                const tree = parse(tokens);
+                historyList = [];
+                pos = 0;
+                const vars = [...collectVars(tree)];
+                const table = makeTable(vars, tree);
+                historyList.push({ rule: '입력', desc: `입력: ${raw}`, tree: tree.clone() });
+                historyList.push({ rule: '파싱', desc: `파싱 트리: ${tree.toString()}`, tree: tree.clone() });
+                historyList.push({ rule: '진리표', desc: table.map(r => `${JSON.stringify(r.assign)} => ${r.val ? 1 : 0}`).join('\n'), tree: tree.clone() });
+                historyList.push(...applyRules(tree));
+                render();
+            } catch (e) {
+                tRes.textContent = '오류: ' + e.message;
+            }
+        });
+
+        function render() {
+            const mode = [...modes].find(r => r.checked).value;
+            const entry = historyList[pos];
+            if (mode === 'text') {
+                tRes.textContent = `[${pos + 1}/${historyList.length}] ${entry.rule}\n${entry.desc}`;
+            } else {
+                const vars = [...collectVars(entry.tree)];
+                const table = makeTable(vars, entry.tree);
+                kRes.innerHTML = renderKMap(vars, table);
+            }
+            document.getElementById('prevBtn').disabled = pos === 0;
+            document.getElementById('nextBtn').disabled = pos === historyList.length - 1;
+        }
+
+        document.getElementById('prevBtn').onclick = () => { if (pos > 0) pos--; render(); };
+
+        document.getElementById('nextBtn').onclick = () => { if (pos < historyList.length - 1) pos++; render(); };
+    </script>
+</body>
+
+</html>
