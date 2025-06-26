@@ -1,9 +1,3 @@
-# 리스트에서 특정 숫자의 위치 찾기
-# 입력: 리스트 a, 찾는 값 x
-# 출력: 찾으면 그 값의 위치, 찾지 못하면 -1
-
-# 1번을 해보세요! 
-
 def search_list(a, x):
     n = len(a)
     for i in range(0, n):
@@ -11,11 +5,6 @@ def search_list(a, x):
             return i    
     return -1
 
-
-
-
-
- 
 v = [17, 92, 18, 33, 58, 7, 33, 42]
 print(search_list(v, 18))   # 2(순서상 세 번째지만, 위치 번호는 2)
 print(search_list(v, 33))   # 3(33은 리스트에 두 번 나오지만 처음 나온 위치만 출력)
