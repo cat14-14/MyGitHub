@@ -7,10 +7,8 @@ def merge_sort(a):
     g2 = a[mid:]
     merge_sort(g1)
     merge_sort(g2)
-    i1=0
-    i2=0
-    i3=0
-    ia=0
+    i1, i2, i3, ia = 0, 0, 0, 0
+    
     while i1 < len(g1) and i2 < len(g2):
         if g1[i1] < g2[i2]:
             a[ia] = g1[i1]
