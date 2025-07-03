@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>재귀 시각화 툴 (Max / Min / Sum)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg:#f9fafb;--card:#fff;--border:#e5e7eb;
+      --primary:#2563eb;--primary-dark:#1d4ed8;
+      --call:#3b82f6;--compare:#d97706;--ret:#059669;--current:#fde047;
+      --mono:'SFMono-Regular',Consolas,'Ubuntu Mono',monospace;
+    }
+    *{margin:0;padding:0;box-sizing:border-box;font-family:"Pretendard",Arial,sans-serif;}
+    body{background:var(--bg);padding:2rem;line-height:1.55;}
+    h1{font-size:1.8rem;margin-bottom:1rem;}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:.8rem;padding:1.5rem;margin-bottom:1.5rem;box-shadow:0 2px 4px rgba(0,0,0,.05);}  
+    .input-area{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;}
+    select,input[type=text]{flex:1 1 220px;padding:.55rem .75rem;border:1px solid var(--border);border-radius:.5rem;font-size:.95rem;}
+    button{display:flex;align-items:center;gap:.25rem;padding:.55rem 1.15rem;background:var(--primary);color:#fff;border:none;border-radius:.5rem;font-size:.9rem;cursor:pointer;transition:background .2s;}button:hover{background:var(--primary-dark);}button:disabled{opacity:.4;cursor:not-allowed;}
+    /* 시각화 */
+    #visualization{max-height:48vh;overflow-y:auto;font-size:.9rem;border:1px solid var(--border);border-radius:.5rem;background:#fff;padding:1rem;}
+    .step{border-left:3px solid transparent;padding:.35rem .75rem;margin:.12rem 0;border-radius:.25rem;opacity:0;transform:translateX(-8px);animation:fade .25s forwards;white-space:pre-wrap;word-break:break-all;}
+    @keyframes fade{to{opacity:1;transform:translateX(0);}}
+    .call{border-color:var(--call);color:var(--call);} .compare{border-color:var(--compare);color:var(--compare);} .return{border-color:var(--ret);color:var(--ret);} .current-step{background:var(--current);} .current-line{background:var(--current);} 
+    .controls{display:flex;gap:.5rem;margin-top:1rem;flex-wrap:wrap;}
+    .progress{margin-left:auto;font-size:.85rem;align-self:center;}
+    pre{width:100%;font-family:var(--mono);font-size:.8rem;border:1px solid var(--border);border-radius:.5rem;padding:1rem;background:#f3f4f6;white-space:pre-wrap;word-break:break-all;overflow:auto;}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>재귀 호출 시각화 툴</h1>
+    <p>알고리즘(최대·최소·합계)을 선택하고 숫자 목록을 입력한 뒤 <strong>Run</strong>을 누르면, 재귀 과정과 해당 코드 라인이 단계별로 하이라이트됩니다.</p>
+    <div class="input-area">
+      <select id="algoSel">
+        <option value="max">최대값 (fm)</option>
+        <option value="min">최소값 (fn)</option>
+        <option value="sum">합계 (fs)</option>
+      </select>
+      <input type="text" id="dataInp" placeholder="17, 92, 18, 33, 58, 7, 33, 42" />
+      <button id="runBtn">Run</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>📄 Algorithm Code</h3>
+    <pre id="codeView"></pre>
+  </div>
+
+  <div id="visualization" class="card"></div>
+  <div class="controls">
+    <button id="prevBtn" disabled>◀ Prev</button>
+    <button id="nextBtn" disabled>Next ▶</button>
+    <button id="playBtn" disabled>▶ Play</button>
+    <button id="resetBtn" disabled>⟲ Reset</button>
+    <span class="progress" id="progressText"></span>
+  </div>
+
+<script>
+const $=s=>document.querySelector(s);
+const algoSel=$('#algoSel'),dataInp=$('#dataInp');
+const runBtn=$('#runBtn'),prevBtn=$('#prevBtn'),nextBtn=$('#nextBtn'),playBtn=$('#playBtn'),resetBtn=$('#resetBtn');
+const viz=$('#visualization'),progressText=$('#progressText'),codeView=$('#codeView');
+let steps=[],idx=-1,timer=null,lineMap={};
+
+/* 템플릿 (실제 줄바꿈 포함) */
+const templates={
+  max:{code:`function fm(a, b) {
+  if (b === 1) {
+    return a[0];
+  }
+  const prev = fm(a, b - 1);
+  if (prev > a[b - 1]) {
+    return prev;
+  } else {
+    return a[b - 1];
+  }
+}`,lines:{call:0,returnBase:2,compare:5,return:6}},
+  min:{code:`function fn(a, b) {
+  if (b === 1) {
+    return a[0];
+  }
+  const prev = fn(a, b - 1);
+  if (prev < a[b - 1]) {
+    return prev;
+  } else {
+    return a[b - 1];
+  }
+}`,lines:{call:0,returnBase:2,compare:5,return:6}},
+  sum:{code:`function fs(a, b) {
+  if (b === 1) {
+    return a[0];
+  }
+  const prev = fs(a, b - 1);
+  const res  = prev + a[b - 1];
+  return res;
+}`,lines:{call:0,returnBase:2,compare:4,return:5}}
+};
+
+function loadTemplate(){
+  const t=templates[algoSel.value];
+  lineMap=t.lines;
+  codeView.innerHTML=escapeHtml(t.code).split('\n').map((l,i)=>`<div data-ln="${i}">${l}</div>`).join('');
+}
+
+function escapeHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+/* push step */
+function push(depth,text,type){steps.push({depth,text,type});}
+
+/* 알고리즘 실행 */
+function runAlgo(arr){
+  steps=[];idx=-1;
+  const kind=algoSel.value;
+  const fn={
+    max:function fm(a,b,d){push(d,`fm(${b}) 호출`,'call');if(b===1){push(d,'return '+a[0],'return');return a[0];}const prev=fm(a,b-1,d+1);push(d,`compare ${prev} vs ${a[b-1]}`,'compare');const res=prev>a[b-1]?prev:a[b-1];push(d,'return '+res,'return');return res;},
+    min:function fn(a,b,d){push(d,`fn(${b}) 호출`,'call');if(b===1){push(d,'return '+a[0],'return');return a[0];}const prev=fn(a,b-1,d+1);push(d,`compare ${prev} vs ${a[b-1]}`,'compare');const res=prev<a[b-1]?prev:a[b-1];push(d,'return '+res,'return');return res;},
+    sum:function fs(a,b,d){push(d,`fs(${b}) 호출`,'call');if(b===1){push(d,'return '+a[0],'return');return a[0];}const prev=fs(a,b-1,d+1);push(d,`sum ${prev}+${a[b-1]}`,'compare');const res=prev+a[b-1];push(d,'return '+res,'return');return res;}
+  }[kind];
+  const result=fn(arr,arr.length,0);
+  push(0,'최종 결과: '+result,'return');
+  idx=0;render();
+}
+
+/* 렌더링 */
+function render(){
+  viz.innerHTML='';
+  for(let i=0;i<=idx;i++){
+    const s=steps[i];
+    const div=document.createElement('div');
+    div.className=`step ${s.type}${i===idx?' current-step':''}`;
+    div.style.marginLeft=s.depth*20+'px';
+    div.textContent=s.text;
+    viz.appendChild(div);
+  }
+  viz.scrollTop=viz.scrollHeight;
+  highlightCode();
+  updateCtrls();
+}
+function highlightCode(){
+  Array.from(codeView.children).forEach(c=>c.classList.remove('current-line'));
+  const ln=lineMap[steps[idx]?.type]??null;
+  if(ln!==null){const elem=codeView.querySelector(`[data-ln="${ln}"]`);if(elem)elem.classList.add('current-line');}
+}
+function updateCtrls(){prevBtn.disabled=idx<=0;nextBtn.disabled=idx>=steps.length-1;playBtn.disabled=steps.length===0;resetBtn.disabled=steps.length===0;progressText.textContent=steps.length?`단계 ${idx+1}/${steps.length}`:'';}
+
+/* 컨트롤 */
+runBtn.onclick=()=>{
+  const arr=dataInp.value.trim().split(/\s*,\s*/).map(Number).filter(n=>!isNaN(n));
+  if(!arr.length){alert('정수 리스트를 입력하세요');return;}
+  runAlgo(arr);
+};
+prevBtn.onclick=()=>{if(idx>0){idx--;render();}};
+nextBtn.onclick=()=>{if(idx<steps.length-1){idx++;render();}};
+playBtn.onclick=()=>{
+  if(timer){clearInterval(timer);timer=null;playBtn.textContent='▶ Play';return;}
+  playBtn.textContent='❚❚ Pause';
+  timer=setInterval(()=>{if(idx<steps.length-1){idx++;render();}else{clearInterval(timer);timer=null;playBtn.textContent='▶ Play';}},600);
+};
+resetBtn.onclick=()=>{steps=[];idx=-1;viz.innerHTML='';updateCtrls();highlightCode();};
+
+/* 초기화 */
+loadTemplate();dataInp.value='17, 92, 18, 33, 58, 7, 33, 42';updateCtrls();
+</script>
+</body>
+</html>
