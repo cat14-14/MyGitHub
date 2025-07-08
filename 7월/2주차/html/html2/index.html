@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meta Horizon</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f0f2f5;
+            color: #1c1e21;
+        }
+
+        .header {
+            background: white;
+            padding: 12px 20px;
+            border-bottom: 1px solid #dadde1;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 24px;
+            font-weight: 600;
+            color: #1877f2;
+        }
+
+        .logo::before {
+            content: "⚡";
+            color: #1877f2;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .btn-login {
+            background: #1877f2;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .hero-section {
+            position: relative;
+            height: 60vh;
+            min-height: 500px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .hero-content {
+            text-align: center;
+            z-index: 2;
+            position: relative;
+        }
+
+        .hero-title {
+            font-size: 4rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 40px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .app-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .app-button {
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: transform 0.2s;
+        }
+
+        .app-button:hover {
+            transform: translateY(-2px);
+        }
+
+        .hero-characters {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1;
+            opacity: 0.3;
+        }
+
+        .character {
+            width: 100px;
+            height: 100px;
+            background: #ff6b6b;
+            border-radius: 50%;
+            position: absolute;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .character:nth-child(1) {
+            left: -200px;
+            top: -50px;
+            background: #4ecdc4;
+            animation-delay: 0s;
+        }
+
+        .character:nth-child(2) {
+            right: -200px;
+            top: -50px;
+            background: #45b7d1;
+            animation-delay: 1s;
+        }
+
+        .character:nth-child(3) {
+            left: -100px;
+            bottom: -100px;
+            background: #ff6b6b;
+            animation-delay: 2s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .main-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #1c1e21;
+        }
+
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .game-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+        }
+
+        .game-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+        }
+
+        .game-image {
+            width: 100%;
+            height: 150px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .game-info {
+            padding: 16px;
+        }
+
+        .game-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #1c1e21;
+        }
+
+        .game-stats {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #65676b;
+            font-size: 0.875rem;
+        }
+
+        .game-stats::before {
+            content: "👥";
+        }
+
+        .events-section {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 40px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .events-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .event-card {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 16px;
+            border-left: 4px solid #1877f2;
+        }
+
+        .event-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #1c1e21;
+        }
+
+        .event-time {
+            color: #65676b;
+            font-size: 0.875rem;
+            margin-bottom: 4px;
+        }
+
+        .event-attendees {
+            color: #65676b;
+            font-size: 0.875rem;
+        }
+
+        .faq-section {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 40px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .faq-item {
+            border-bottom: 1px solid #e4e6ea;
+            padding: 16px 0;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .faq-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .faq-question {
+            font-size: 1rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: #1c1e21;
+        }
+
+        .faq-question::after {
+            content: "+";
+            font-size: 1.5rem;
+            color: #65676b;
+        }
+
+        .footer {
+            background: #f8f9fa;
+            padding: 40px 20px;
+            border-top: 1px solid #e4e6ea;
+            margin-top: 40px;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 32px;
+        }
+
+        .footer-section h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #1c1e21;
+        }
+
+        .footer-link {
+            color: #65676b;
+            text-decoration: none;
+            font-size: 0.875rem;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .footer-link:hover {
+            color: #1877f2;
+        }
+
+        /* Game specific backgrounds */
+        .game-meme-tycoon { background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); }
+        .game-jump-rope { background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); }
+        .game-big-gym { background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); }
+        .game-jurassic { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .game-yeet { background: linear-gradient(135deg, #ff6b6b 0%, #feca57 100%); }
+        .game-fire { background: linear-gradient(135deg, #ff9a56 0%, #ff6b6b 100%); }
+        .game-toxic { background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%); }
+        .game-highschool { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .game-creepy { background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); }
+        .game-doom { background: linear-gradient(135deg, #2d3436 0%, #636e72 100%); }
+        .game-meta-kong { background: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%); }
+        .game-rex { background: linear-gradient(135deg, #fd79a8 0%, #fdcb6e 100%); }
+        .game-predator { background: linear-gradient(135deg, #00cec9 0%, #55a3ff 100%); }
+        .game-magic { background: linear-gradient(135deg, #2d3436 0%, #636e72 100%); }
+        .game-serenity { background: linear-gradient(135deg, #fdcb6e 0%, #fd79a8 100%); }
+        .game-betta { background: linear-gradient(135deg, #ff7675 0%, #fd79a8 100%); }
+        .game-drip { background: linear-gradient(135deg, #00cec9 0%, #55a3ff 100%); }
+        .game-lavish { background: linear-gradient(135deg, #2d3436 0%, #636e72 100%); }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">Meta Horizon</div>
+        <div class="nav-right">
+            <button class="btn-login">로그인</button>
+        </div>
+    </header>
+
+    <section class="hero-section">
+        <div class="hero-characters">
+            <div class="character">🧑‍🦲</div>
+            <div class="character">👨‍💻</div>
+            <div class="character">👩‍🦰</div>
+        </div>
+        <div class="hero-content">
+            <h1 class="hero-title">Friends make the worlds fun</h1>
+            <div class="app-buttons">
+                <a href="#" class="app-button">📱 Download on the App Store</a>
+                <a href="#" class="app-button">🤖 GET IT ON Google Play</a>
+            </div>
+        </div>
+    </section>
+
+    <main class="main-content">
+        <section>
+            <h2 class="section-title">인기 월드</h2>
+            <div class="games-grid">
+                <div class="game-card">
+                    <div class="game-image game-meme-tycoon">🎮</div>
+                    <div class="game-info">
+                        <h3 class="game-title">MEME TYCOON 🔥[NEW...</h3>
+                        <div class="game-stats">좋아요 525개</div>
+                    </div>
+                </div>
+                <div class="game-card">
+                    <div class="game-image game-jump-rope">🏃‍♀️</div>
+                    <div class="game-info">
+                        <h3 class="game-title">Jump Rope Challenge - Sq...</h3>
+                        <div class="game-stats">좋아요 359개</div>
+                    </div>
+                </div>
+                <div class="game-card">
+                    <div class="game-image game-big-gym">🏋️‍♂️</div>
+                    <div class="game-info">
+                        <h3 class="game-title">Big Jim's Big Gym Sim</h3>
+                        <div class="game-stats">좋아요 547개</div>
+                    </div>
+                </div>
+                <div class="game-card">
+                    <div class="game-image game-jurassic">🦕</div>
+                    <div class="game-info">
+                        <h3 class="game-title">JURASSIC OUT-RUN</h3>
+                        <div class="game-stats">좋아요 1K개</div>
+                    </div>
+                </div>
+                <div class="game-card">
+                    <div class="game-image game-yeet">🎯</div>
+                    <div class="game-info">
+                        <h3 class="game-title">Yeet Yourself</h3>
+                        <div class="game-stats">좋아요 594개</div>
+                    </div>
+                </div>
+                <div class="game-card">
+                    <div class="game-image game-fire">🔥</div>
+                    <div class="game-info">
+                        <h3 class="game-title">Fire & Rescue Fireworks...</h3>
+                        <div class="game-stats">좋아요 3.1K개</div>
+                    </div>
+                </div>
+                <div class="game-card">
+                    <div class="game-image game-toxic">🧪</div>
+                    <div class="game-info">
+                        <h3 class="game-title">Toxic Teddy's hide and seek</h3>
+                        <div class="game-stats">좋아요 10.1K개</div>
+                    </div>
+                </div>
+                <div class="game-card">
+                    <div class="game-image game-highschool">🎓</div>
+                    <div class="game-info">
+                        <h3 class="game-title">Vr HighSchool ✅</h3>
+                        <div class="game-stats">좋아요 6.2K개</div>
+                    </div>
+                </div>
+                <div class="game-card">
+                    <div class="game-image game-creepy">🕷️</div>
+                    <div class="game-info">
+                        <h3 class="game-title">Creepy Cabin</h3>
+                        <div class="game-stats">좋아요 13.7K개</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2 class="section-title">소설 월드</h2>
+            <div class="games-grid">
+                <div class="game-card">
+                    <div class="game-image game-doom">💀</div>
+                    <div class="game-info">
+                        <h3 class="game-title">The Doom Game</h3>
+                        <div class="game-stats">좋아요 2.1K개</div>
+                    </div>
+                </div>
+                <div class="game-card">
+                    <div class="game-image game-meta-kong">🦍</div>
+                    <div class="game-info">
+                        <h3 class="game-title">(New) Meta Kong</h3>
+                        <div class="game-stats">좋아요 241개</div>
+                    </div>
+                </div>
+                <div class="game-card">
+                    <div class="game-image game-rex">🏠</div>
+                    <div class="game-info">
+                        <h3 class="game-title">Rex's Metahome</h3>
+                        <div class="game-stats">좋아요 3.2K개</div>
+                    </div>
+                </div>
+                <div class="game-card">
+                    <div class="game-image game-predator">🦏</div>
+                    <div class="game-info">
+                        <h3 class="game-title">Predator Path *NEW* (Mobile...</h3>
+                        <div class="game-stats">좋아요 69개</div>
+                    </div>
+                </div>
+                <div class="game-card">
+                    <div class="game-image game-magic">🏰</div>
+                    <div class="game-info">
+                        <h3 class="game-title">School of Magic #Hogwarts...</h3>
+                        <div class="game-stats">좋아요 630개</div>
+                    </div>
+                </div>
+                <div class="game-card">
+                    <div class="game-image game-serenity">🏝️</div>
+                    <div class="game-info">
+                        <h3 class="game-title">Serenity Island</h3>
+                        <div class="game-stats">좋아요 60개</div>
+                    </div>
+                </div>
+                <div class="game-card">
+                    <div class="game-image game-betta">🛍️</div>
+                    <div class="game-info">
+                        <h3 class="game-title">*7/4* 🔥Betta Meta Mall🔥...</h3>
+                        <div class="game-stats">좋아요 220개</div>
+                    </div>
+                </div>
+                <div class="game-card">
+                    <div class="game-image game-drip">👕</div>
+                    <div class="game-info">
+                        <h3 class="game-title">DRIP Couture London (Clothi...</h3>
+                        <div class="game-stats">좋아요 90개</div>
+                    </div>
+                </div>
+                <div class="game-card">
+                    <div class="game-image game-lavish">🏚️</div>
+                    <div class="game-info">
+                        <h3 class="game-title">Lavish Life (Winter) Mansion</h3>
+                        <div class="game-stats">좋아요 765개</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="events-section">
+            <h2 class="section-title">이벤트 시리즈</h2>
+            <div class="events-grid">
+                <div class="event-card">
+                    <h3 class="event-title">Game Fun Series!</h3>
+                    <div class="event-time">📅 15 7월 09:00에 종료</div>
+                    <div class="event-attendees">👥 관심 있음 1.5K명</div>
+                </div>
+                <div class="event-card">
+                    <h3 class="event-title">Living Hope VR Church</h3>
+                    <div class="event-time">📅 다음 이벤트: 13 7월 09:45</div>
+                    <div class="event-attendees">👥 관심 있음 433명</div>
+                </div>
+                <div class="event-card">
+                    <h3 class="event-title">Grand Opening of Hot Skates Sk8 i...</h3>
+                    <div class="event-time">📅 내일 04:00에 종료</div>
+                    <div class="event-attendees">👥 관심 있음 62명</div>
+                </div>
+                <div class="event-card">
+                    <h3 class="event-title">Retail Rush</h3>
+                    <div class="event-time">📅 다음 이벤트: 11 7월 08:00</div>
+                    <div class="event-attendees">👥 관심 있음 13명</div>
+                </div>
+                <div class="event-card">
+                    <h3 class="event-title">Fruity Tournament</h3>
+                    <div class="event-time">📅 다음 이벤트: 12 7월 04:00</div>
+                    <div class="event-attendees">👥 관심 있음 9명</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="faq-section">
+            <div class="faq-item">
+                <div class="faq-question">원하는 월드를 찾을 수 없는 이유는?</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question">모바일 또는 웹에서 접속하는 경우 VR을 이용 중인 친구와 함께 게임할 수 있나요?</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question">웹 또는 모바일에서 Meta Horizon 월드를 방문하려면?</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question">더 이상 모바일의 브라우저에서 월드를 방문할 수 없는 이유는?</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question">인터넷 속도는 어느 정도여야 하나요?</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question">부모님을 위한 정보를 포함하여 Meta Horizon 월드의 안전 관련 정보를 자세히 알아보려면?</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question">도움을 받으려면 어떻게 해야 하나요?</div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Meta Horizon</h3>
+                <a href="#" class="footer-link">추가 Meta 플랫폼 대금결제시 서비스 약관</a>
+                <a href="#" class="footer-link">추가 Meta 플랫폼 대금결제시 개인정보보호방침</a>
+                <a href="#" class="footer-link">모니터링 및 독립 관련 고지 사항</a>
+            </div>
+            <div class="footer-section">
+                <a href="#" class="footer-link">공지사항 및 정책 + Meta Horizon 월드 콘텐츠 가이드라인</a>
+                <a href="#" class="footer-link">고객 센터</a>
+                <a href="#" class="footer-link">Horizon 월드 제작자 고지</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // FAQ 토글 기능
+        document.querySelectorAll('.faq-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const question = this.querySelector('.faq-question');
+                const isOpen = question.style.color === 'rgb(24, 119, 242)';
+                
+                // 모든 FAQ 항목 초기화
+                document.querySelectorAll('.faq-question').forEach(q => {
+                    q.style.color = '';
+                    q.style.fontWeight = '500';
+                });
+                
+                // 클릭한 항목만 활성화
+                if (!isOpen) {
+                    question.style.color = '#1877f2';
+                    question.style.fontWeight = '600';
+                }
+            });
+        });
+
+        // 게임 카드 호버 효과
+        document.querySelectorAll('.game-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-8px)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+
+        // 스크롤 애니메이션
+        function animateOnScroll() {
+            const elements = document.querySelectorAll('.game-card, .event-card');
+            elements.forEach(element => {
+                const elementTop = element.getBoundingClientRect().top;
+                const elementVisible = 150;
+                
+                if (elementTop < window.innerHeight - elementVisible) {
+                    element.style.opacity = '1';
+                    element.style.transform = 'translateY(0)';
+                } else {
+                    element.style.opacity = '0';
+                    element.style.transform = 'translateY(20px)';
+                }
+            });
+        }
+
+        // 초기 스타일 설정
+        document.querySelectorAll('.game-card, .event-card').forEach(element => {
+            element.style.opacity = '0';
+            element.style.transform = 'translateY(20px)';
+            element.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+        });
+
+        window.addEventListener('scroll', animateOnScroll);
+        animateOnScroll(); // 초기 실행
+    </script>
+</body>
+</html>

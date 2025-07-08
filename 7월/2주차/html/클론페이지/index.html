@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MetaHorizon</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    .site-header {
+      background-color: #f2f2f2;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      display: flex;
+      padding: 16px 0;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      margin-left: 40px;
+    }
+
+    .logo-text {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #333;
+      margin-top: 5.5px;
+    }
+
+    .login {
+      display: flex;
+      margin-right: 60px;
+      margin-top: 1.5px;
+    }
+
+    .btn-login {
+      padding: 10px 20px;
+      font-size: 17.5px;
+      font-weight: 500;
+      color: #000;
+      background-color: transparent;
+      border-radius: 10px;
+      transition: all 0.2s ease;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .btn-login:hover {
+      background-color: rgba(0, 0, 0, 0.06);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+      transform: translateY(-1px);
+    }
+
+    .hero-section {
+      position: relative;
+      width: 100%;
+      height: 600px;
+      overflow: hidden;
+    }
+
+    .hero-video {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 0;
+    }
+
+    .hero-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: center;
+      pointer-events: none;
+    }
+
+    .store-buttons {
+      display: flex;
+      gap: 40px;
+      margin-bottom: 60px;
+      margin-left: -0.5%;
+      pointer-events: auto;
+      position: relative;
+      z-index: 2;
+    }
+
+    .store-buttons img {
+      height: 57px;
+      cursor: pointer;
+      border-radius: 10px;
+      border: 1.5px solid #9E9E9E;
+    }
+
+    .qr-modal, .qr-modal2 {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.6);
+      z-index: 9999;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .qr-modal-content, .qr-modal-content2 {
+      background-color: #fff;
+      padding: 40px;
+      border-radius: 24px;
+      text-align: center;
+      width: 550px;
+      height: 500px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+      font-size: 27px;
+    }
+
+    .qr-image, .qr-image2 {
+      width: 340px;
+      height: 340px;
+      margin: 30px auto;
+    }
+
+    .close-btn, .close-btn2 {
+      background-color: #333;
+      color: white;
+      border: none;
+      padding: 14px 28px;
+      border-radius: 20px;
+      font-size: 17px;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    .close-btn:hover, .close-btn2:hover {
+      background-color: #555;
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="logo">
+      <img src="/7월/2주차/html/클론페이지/image/Lockup.svg" alt="Logo">
+    </div>
+    <div class="login">
+      <a href="/login" class="btn-login">로그인</a>
+    </div>
+  </header>
+
+  <section class="hero-section">
+    <video class="hero-video" autoplay muted loop playsinline controls>
+      <source src="/7월/2주차/html/클론페이지/video/MetaHorizonvideo.mp4" type="video/mp4" />
+      브라우저가 video 태그를 지원하지 않습니다.
+    </video>
+
+    <div class="hero-overlay">
+      <div class="store-buttons">
+        <img src="/7월/2주차/html/클론페이지/image/appstore.png" alt="App Store" onclick="openModal1()" />
+        <img src="/7월/2주차/html/클론페이지/image/googleplay.png" alt="Google Play" onclick="openModal2()" />
+      </div>
+    </div>
+  </section>
+
+  <!-- App Store 모달 -->
+  <div id="qrModal" class="qr-modal">
+    <div class="qr-modal-content">
+      <p>지금 바로 <strong>Meta Horizon</strong> 앱을 다운로드해 보세요.</p>
+      <img src="/7월/2주차/html/클론페이지/image/appsotredownload.png" alt="QR 코드" class="qr-image" />
+      <button class="close-btn" onclick="closeModal1()">닫기</button>
+    </div>
+  </div>
+
+  <!-- Google Play 모달 -->
+  <div id="qrModal2" class="qr-modal2">
+    <div class="qr-modal-content2">
+      <p>지금 바로 <strong>Meta Horizon</strong> 앱을 다운로드해 보세요.</p>
+      <img src="/7월/2주차/html/클론페이지/image/googleplaydownload.png" alt="QR 코드" class="qr-image2" />
+      <button class="close-btn2" onclick="closeModal2()">닫기</button>
+    </div>
+  </div>
+
+  <script>
+    function openModal1() {
+      document.getElementById('qrModal').style.display = 'flex';
+    }
+
+    function closeModal1() {
+      document.getElementById('qrModal').style.display = 'none';
+    }
+
+    function openModal2() {
+      document.getElementById('qrModal2').style.display = 'flex';
+    }
+
+    function closeModal2() {
+      document.getElementById('qrModal2').style.display = 'none';
+    }
+  </script>
+</body>
+</html>
