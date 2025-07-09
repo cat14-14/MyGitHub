@@ -3,8 +3,8 @@
 int main(void)
 {
      int n;
-    scanf("%d", &n);
-    printf("%d", n);
+    scanf("%c", &n);
+    printf("%c", n);
 
     return 0;
 }
