@@ -2,5 +2,6 @@
 
 int main(void)
 {
-    printf("\"c:\\test"\");
+    printf("\"c:\\test\"");
+    return 0;
 }
