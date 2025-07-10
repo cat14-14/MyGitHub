@@ -3,10 +3,10 @@ int main(void)
 {
     int a,r,n;
     scanf("%d %d %d", &a, &r, &n);
-    int sum = a;
-    for(int i = a; i<=n; i++)
+    long long sum = a;
+    for(int i = 1; i<n; i++)
     {
         sum *= r;
     }
-    printf("%d", sum);
+    printf("%lld", sum);
 }
