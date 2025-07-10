@@ -1,29 +1,36 @@
 #include <stdio.h>
 int main(void)
 {
-    int a,b,c;
-    scanf("%d %d %d", &a, &b, &c);
-    if (a == b && b == c)
+    int a, c=0;
+    scanf("%d", &a);
+    while(a>=500)
     {
-        printf("%d",10000+a*1000);
+        a-=500;
+        c++;
     }
-    else if(a==b)
+        while(a>=100)
     {
-        printf("%d", 1000+a*100);
+        a-=100;
+        c++;
     }
-    else if(a==c)
+        while(a>=50)
     {
-        printf("%d", 1000+a*100);
+        a-=50;
+        c++;
     }
-    else if(c==b)
+        while(a>=10)
     {
-        printf("%d", 1000+c*100);
+        a-=10;
+        c++;
     }
-    else{
-        int max = a;
-        if (b > max) max = b;
-        if (c > max) max = c;
-        printf("%d", max * 100);
-
+        while(a>=5)
+    {
+        a-=5;
+        c++;
+    }
+        while(a>=1)
+    {
+        a-=1;
+        c++;
     }
 }
