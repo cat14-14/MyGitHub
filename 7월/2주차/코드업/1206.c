@@ -1,4 +1,21 @@
 #include <stdio.h>
+
+int main(void) {
+    int a, b;
+    scanf("%d %d", &a, &b);
+
+    if (b % a == 0) {
+        printf("%d*%d=%d\n", a, b / a, b);
+    } else if (a % b == 0) {
+        printf("%d*%d=%d\n", b, a / b, a);
+    } else {
+        printf("none\n");
+    }
+
+    return 0;
+}
+/*
+#include <stdio.h>
 int main(void)
 {
     int a,b;
@@ -27,4 +44,8 @@ int main(void)
         }
         printf("none");
     }
+    else{
+        printf("none");
+    }
 }
+*/
