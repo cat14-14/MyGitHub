@@ -5,6 +5,6 @@ int main(void)
     scanf("%s",s);
     for(int i=0; s[i]!='\0'; i++)
     {
-        printf("%c\n", s[i]);
+        printf("\'%c\'\n", s[i]);
     }
 }
