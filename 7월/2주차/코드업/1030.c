@@ -5,4 +5,4 @@ int main()
     scanf("%lld",&a);
     printf("%lld",a);
     
-}
+}1
