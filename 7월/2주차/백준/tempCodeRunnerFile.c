@@ -1,36 +1,21 @@
 #include <stdio.h>
+#include <string.h>
+
 int main(void)
 {
-    int a, c=0;
-    scanf("%d", &a);
-    while(a>=500)
+    char a[10000], b[10000];  // 문자열로 입력 받기
+    long long int sum = 0;
+
+    scanf("%s %s", a, b);
+    int len1, len2;
+    len1 = strlen(a);
+    len2 = strlen(b);
+    for(int i=0; i<len1; i++)
     {
-        a-=500;
-        c++;
+        for(int j=0; j<len2; j++)
+        {
+            sum = sum + (a[i] - '0') * (b[j] - '0');
+        }
     }
-        while(a>=100)
-    {
-        a-=100;
-        c++;
-    }
-        while(a>=50)
-    {
-        a-=50;
-        c++;
-    }
-        while(a>=10)
-    {
-        a-=10;
-        c++;
-    }
-        while(a>=5)
-    {
-        a-=5;
-        c++;
-    }
-        while(a>=1)
-    {
-        a-=1;
-        c++;
-    }
+    printf("%lld", sum);
 }
