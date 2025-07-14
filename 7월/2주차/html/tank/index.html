@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>탱크 배틀 게임</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #1a1a1a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+            color: white;
+        }
+        
+        #gameContainer {
+            position: relative;
+            background: #000;
+            border: 2px solid #444;
+        }
+        
+        canvas {
+            display: block;
+            background: #2a2a2a;
+        }
+        
+        #ui {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 10;
+        }
+        
+        #healthBar {
+            width: 200px;
+            height: 20px;
+            background: #333;
+            border: 2px solid #666;
+            margin-bottom: 10px;
+        }
+        
+        #healthFill {
+            height: 100%;
+            background: linear-gradient(to right, #ff3333, #66ff66);
+            transition: width 0.3s;
+        }
+        
+        #score {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        
+        #tankSelect {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            padding: 30px;
+            border: 2px solid #666;
+            text-align: center;
+            z-index: 20;
+        }
+        
+        .tankOption {
+            display: inline-block;
+            margin: 10px;
+            padding: 20px;
+            background: #333;
+            border: 2px solid #666;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .tankOption:hover {
+            background: #444;
+            border-color: #888;
+            transform: scale(1.05);
+        }
+        
+        #gameOver {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            padding: 30px;
+            border: 2px solid #666;
+            text-align: center;
+            z-index: 20;
+            display: none;
+        }
+        
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background: #444;
+            color: white;
+            border: 2px solid #666;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        
+        button:hover {
+            background: #555;
+        }
+    </style>
+</head>
+<body>
+    <div id="gameContainer">
+        <canvas id="gameCanvas" width="1000" height="700"></canvas>
+        
+        <div id="ui">
+            <div id="score">점수: <span id="scoreValue">0</span></div>
+            <div id="healthBar">
+                <div id="healthFill"></div>
+            </div>
+            <div id="tankType">탱크: <span id="tankName">-</span></div>
+        </div>
+        
+        <div id="tankSelect">
+            <h2>탱크를 선택하세요</h2>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+                <div class="tankOption" data-type="light">
+                    <h3>경전차</h3>
+                    <p>속도: ★★★★★<br>체력: ★★<br>공격력: ★★</p>
+                </div>
+                <div class="tankOption" data-type="medium">
+                    <h3>중형전차</h3>
+                    <p>속도: ★★★<br>체력: ★★★<br>공격력: ★★★</p>
+                </div>
+                <div class="tankOption" data-type="heavy">
+                    <h3>중전차</h3>
+                    <p>속도: ★<br>체력: ★★★★★<br>공격력: ★★★★★</p>
+                </div>
+                <div class="tankOption" data-type="special">
+                    <h3>특수전차</h3>
+                    <p>속도: ★★★★<br>체력: ★★★<br>산탄포 발사</p>
+                </div>
+                <div class="tankOption" data-type="sniper">
+                    <h3>저격전차</h3>
+                    <p>속도: ★★☆<br>체력: ★★<br>초고속 탄환</p>
+                </div>
+                <div class="tankOption" data-type="rapid">
+                    <h3>속사전차</h3>
+                    <p>속도: ★★★☆<br>체력: ★★☆<br>빠른 연사</p>
+                </div>
+                <div class="tankOption" data-type="flame">
+                    <h3>화염전차</h3>
+                    <p>속도: ★★★<br>체력: ★★★<br>화염 발사</p>
+                </div>
+            </div>
+        </div>
+        
+        <div id="gameOver">
+            <h2>게임 오버!</h2>
+            <p>최종 점수: <span id="finalScore">0</span></p>
+            <button onclick="restartGame()">다시 시작</button>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // 게임 상태
+        let gameState = 'selecting'; // selecting, playing, gameover
+        let score = 0;
+        let enemySpawnTimer = 0;
+        let itemSpawnTimer = 0;
+        
+        // 입력 상태
+        const keys = {};
+        let mouseX = 0;
+        let mouseY = 0;
+        
+        // 탱크 종류별 스펙
+        const tankSpecs = {
+            light: {
+                name: '경전차',
+                speed: 5,
+                maxHealth: 50,
+                bulletSpeed: 10,
+                bulletDamage: 10,
+                reloadTime: 20,
+                color: '#66ff66',
+                size: 25
+            },
+            medium: {
+                name: '중형전차',
+                speed: 3,
+                maxHealth: 100,
+                bulletSpeed: 8,
+                bulletDamage: 20,
+                reloadTime: 30,
+                color: '#6666ff',
+                size: 30
+            },
+            heavy: {
+                name: '중전차',
+                speed: 1.5,
+                maxHealth: 200,
+                bulletSpeed: 6,
+                bulletDamage: 40,
+                reloadTime: 50,
+                color: '#ff6666',
+                size: 35
+            },
+            special: {
+                name: '특수전차',
+                speed: 4,
+                maxHealth: 80,
+                bulletSpeed: 8,
+                bulletDamage: 15,
+                reloadTime: 40,
+                color: '#ff66ff',
+                size: 28,
+                special: 'shotgun'
+            },
+            sniper: {
+                name: '저격전차',
+                speed: 2.5,
+                maxHealth: 60,
+                bulletSpeed: 15,
+                bulletDamage: 60,
+                reloadTime: 80,
+                color: '#ffaa00',
+                size: 27,
+                special: 'sniper'
+            },
+            rapid: {
+                name: '속사전차',
+                speed: 3.5,
+                maxHealth: 70,
+                bulletSpeed: 12,
+                bulletDamage: 8,
+                reloadTime: 10,
+                color: '#00ffff',
+                size: 26
+            },
+            flame: {
+                name: '화염전차',
+                speed: 3,
+                maxHealth: 90,
+                bulletSpeed: 6,
+                bulletDamage: 5,
+                reloadTime: 5,
+                color: '#ff8800',
+                size: 30,
+                special: 'flame'
+            }
+        };
+        
+        // 플레이어 탱크
+        let player = null;
+        
+        // 게임 오브젝트 배열
+        let enemies = [];
+        let bullets = [];
+        let items = [];
+        let particles = [];
+        
+        // 탱크 클래스
+        class Tank {
+            constructor(x, y, type, isPlayer = false) {
+                this.x = x;
+                this.y = y;
+                this.type = type;
+                this.spec = tankSpecs[type];
+                this.health = this.spec.maxHealth;
+                this.angle = 0;
+                this.turretAngle = 0;
+                this.reloadTimer = 0;
+                this.isPlayer = isPlayer;
+                this.size = this.spec.size;
+            }
+            
+            update() {
+                if (this.isPlayer) {
+                    // 플레이어 이동 - 개선된 방식
+                    let dx = 0;
+                    let dy = 0;
+                    
+                    if (keys['w'] || keys['W']) dy = -1;
+                    if (keys['s'] || keys['S']) dy = 1;
+                    if (keys['a'] || keys['A']) dx = -1;
+                    if (keys['d'] || keys['D']) dx = 1;
+                    
+                    // 대각선 이동 시 속도 정규화
+                    if (dx !== 0 && dy !== 0) {
+                        dx *= 0.707;
+                        dy *= 0.707;
+                    }
+                    
+                    // 이동
+                    this.x += dx * this.spec.speed;
+                    this.y += dy * this.spec.speed;
+                    
+                    // 탱크 회전 (이동 방향으로)
+                    if (dx !== 0 || dy !== 0) {
+                        const targetAngle = Math.atan2(dy, dx);
+                        const angleDiff = targetAngle - this.angle;
+                        
+                        // 각도 차이를 -π ~ π 범위로 정규화
+                        let normalizedDiff = angleDiff;
+                        while (normalizedDiff > Math.PI) normalizedDiff -= Math.PI * 2;
+                        while (normalizedDiff < -Math.PI) normalizedDiff += Math.PI * 2;
+                        
+                        // 부드러운 회전
+                        this.angle += normalizedDiff * 0.1;
+                    }
+                    
+                    // 포탑 회전 (마우스 방향)
+                    const mdx = mouseX - this.x;
+                    const mdy = mouseY - this.y;
+                    this.turretAngle = Math.atan2(mdy, mdx);
+                    
+                    // 화면 경계 체크
+                    this.x = Math.max(this.size, Math.min(canvas.width - this.size, this.x));
+                    this.y = Math.max(this.size, Math.min(canvas.height - this.size, this.y));
+                } else {
+                    // AI 이동
+                    const dx = player.x - this.x;
+                    const dy = player.y - this.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance > 150) {
+                        this.angle = Math.atan2(dy, dx);
+                        this.x += Math.cos(this.angle) * this.spec.speed * 0.7;
+                        this.y += Math.sin(this.angle) * this.spec.speed * 0.7;
+                    }
+                    
+                    this.turretAngle = Math.atan2(dy, dx);
+                    
+                    // AI 발사
+                    if (this.reloadTimer === 0 && distance < 400) {
+                        this.fire();
+                    }
+                }
+                
+                // 재장전 타이머
+                if (this.reloadTimer > 0) {
+                    this.reloadTimer--;
+                }
+            }
+            
+            fire() {
+                if (this.reloadTimer > 0) return;
+                
+                this.reloadTimer = this.spec.reloadTime;
+                
+                if (this.spec.special === 'shotgun') {
+                    // 산탄포 발사
+                    for (let i = -2; i <= 2; i++) {
+                        const angle = this.turretAngle + (i * 0.15);
+                        bullets.push(new Bullet(
+                            this.x + Math.cos(angle) * this.size,
+                            this.y + Math.sin(angle) * this.size,
+                            angle,
+                            this.spec.bulletSpeed,
+                            this.spec.bulletDamage,
+                            this.isPlayer
+                        ));
+                    }
+                } else if (this.spec.special === 'flame') {
+                    // 화염 발사
+                    for (let i = -1; i <= 1; i++) {
+                        const angle = this.turretAngle + (i * 0.1);
+                        const flameBullet = new Bullet(
+                            this.x + Math.cos(angle) * this.size,
+                            this.y + Math.sin(angle) * this.size,
+                            angle,
+                            this.spec.bulletSpeed,
+                            this.spec.bulletDamage,
+                            this.isPlayer
+                        );
+                        flameBullet.isFlame = true;
+                        bullets.push(flameBullet);
+                    }
+                } else if (this.spec.special === 'sniper') {
+                    // 저격 발사
+                    const sniperBullet = new Bullet(
+                        this.x + Math.cos(this.turretAngle) * this.size,
+                        this.y + Math.sin(this.turretAngle) * this.size,
+                        this.turretAngle,
+                        this.spec.bulletSpeed,
+                        this.spec.bulletDamage,
+                        this.isPlayer
+                    );
+                    sniperBullet.size = 6;
+                    bullets.push(sniperBullet);
+                } else {
+                    // 일반 발사
+                    bullets.push(new Bullet(
+                        this.x + Math.cos(this.turretAngle) * this.size,
+                        this.y + Math.sin(this.turretAngle) * this.size,
+                        this.turretAngle,
+                        this.spec.bulletSpeed,
+                        this.spec.bulletDamage,
+                        this.isPlayer
+                    ));
+                }
+            }
+            
+            takeDamage(damage) {
+                this.health -= damage;
+                
+                // 피격 효과
+                for (let i = 0; i < 5; i++) {
+                    particles.push(new Particle(
+                        this.x + (Math.random() - 0.5) * this.size,
+                        this.y + (Math.random() - 0.5) * this.size,
+                        '#ff0000'
+                    ));
+                }
+                
+                if (this.health <= 0) {
+                    // 폭발 효과
+                    for (let i = 0; i < 20; i++) {
+                        particles.push(new Particle(
+                            this.x + (Math.random() - 0.5) * this.size * 2,
+                            this.y + (Math.random() - 0.5) * this.size * 2,
+                            this.spec.color
+                        ));
+                    }
+                    
+                    if (!this.isPlayer) {
+                        score += 100;
+                        updateScore();
+                    }
+                    
+                    return true; // 파괴됨
+                }
+                return false; // 생존
+            }
+            
+            draw() {
+                ctx.save();
+                
+                // 탱크 몸체
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.angle);
+                
+                ctx.fillStyle = this.spec.color;
+                ctx.fillRect(-this.size, -this.size * 0.6, this.size * 2, this.size * 1.2);
+                
+                // 궤도
+                ctx.fillStyle = '#333';
+                ctx.fillRect(-this.size, -this.size * 0.8, this.size * 2, this.size * 0.3);
+                ctx.fillRect(-this.size, this.size * 0.5, this.size * 2, this.size * 0.3);
+                
+                // 앞쪽 표시 (화살표 모양)
+                ctx.fillStyle = this.isPlayer ? '#ffffff' : this.spec.color;
+                ctx.beginPath();
+                ctx.moveTo(this.size * 0.8, 0);
+                ctx.lineTo(this.size * 0.5, -this.size * 0.3);
+                ctx.lineTo(this.size * 0.5, this.size * 0.3);
+                ctx.closePath();
+                ctx.fill();
+                
+                ctx.restore();
+                
+                // 포탑
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.turretAngle);
+                
+                ctx.fillStyle = this.spec.color;
+                ctx.beginPath();
+                ctx.arc(0, 0, this.size * 0.5, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // 포신
+                ctx.fillRect(0, -this.size * 0.15, this.size * 1.5, this.size * 0.3);
+                
+                // 포신 끝 (더 명확하게)
+                ctx.fillStyle = '#000';
+                ctx.fillRect(this.size * 1.4, -this.size * 0.1, this.size * 0.2, this.size * 0.2);
+                
+                ctx.restore();
+                
+                // 체력바 (적 탱크만)
+                if (!this.isPlayer && this.health < this.spec.maxHealth) {
+                    ctx.fillStyle = '#333';
+                    ctx.fillRect(this.x - this.size, this.y - this.size - 15, this.size * 2, 5);
+                    
+                    ctx.fillStyle = '#ff0000';
+                    ctx.fillRect(
+                        this.x - this.size,
+                        this.y - this.size - 15,
+                        (this.size * 2) * (this.health / this.spec.maxHealth),
+                        5
+                    );
+                }
+            }
+        }
+        
+        // 총알 클래스
+        class Bullet {
+            constructor(x, y, angle, speed, damage, fromPlayer) {
+                this.x = x;
+                this.y = y;
+                this.angle = angle;
+                this.speed = speed;
+                this.damage = damage;
+                this.fromPlayer = fromPlayer;
+                this.size = 4;
+            }
+            
+            update() {
+                this.x += Math.cos(this.angle) * this.speed;
+                this.y += Math.sin(this.angle) * this.speed;
+                
+                // 화면 밖으로 나가면 제거
+                if (this.x < 0 || this.x > canvas.width || 
+                    this.y < 0 || this.y > canvas.height) {
+                    return true;
+                }
+                
+                // 충돌 검사
+                if (this.fromPlayer) {
+                    // 적과 충돌
+                    for (let enemy of enemies) {
+                        if (this.checkCollision(enemy)) {
+                            if (enemy.takeDamage(this.damage)) {
+                                enemies = enemies.filter(e => e !== enemy);
+                            }
+                            return true;
+                        }
+                    }
+                } else {
+                    // 플레이어와 충돌
+                    if (this.checkCollision(player)) {
+                        if (player.takeDamage(this.damage)) {
+                            gameOver();
+                        }
+                        updateHealthBar();
+                        return true;
+                    }
+                }
+                
+                return false;
+            }
+            
+            checkCollision(tank) {
+                const dx = this.x - tank.x;
+                const dy = this.y - tank.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                return distance < tank.size;
+            }
+            
+            draw() {
+                ctx.fillStyle = this.fromPlayer ? '#ffff00' : '#ff6600';
+                
+                if (this.isFlame) {
+                    // 화염 효과
+                    ctx.fillStyle = '#ff4400';
+                    ctx.globalAlpha = 0.8;
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size * 2, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.globalAlpha = 1;
+                }
+                
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+        
+        // 아이템 클래스
+        class Item {
+            constructor(x, y, type) {
+                this.x = x;
+                this.y = y;
+                this.type = type;
+                this.size = 20;
+                this.bobTimer = 0;
+            }
+            
+            update() {
+                this.bobTimer += 0.1;
+                
+                // 플레이어와 충돌 검사
+                const dx = this.x - player.x;
+                const dy = this.y - player.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance < player.size + this.size) {
+                    this.applyEffect();
+                    return true;
+                }
+                
+                return false;
+            }
+            
+            applyEffect() {
+                switch(this.type) {
+                    case 'health':
+                        player.health = Math.min(player.health + 50, player.spec.maxHealth);
+                        updateHealthBar();
+                        break;
+                }
+                
+                // 획득 효과
+                for (let i = 0; i < 10; i++) {
+                    particles.push(new Particle(this.x, this.y, '#00ff00'));
+                }
+            }
+            
+            draw() {
+                const bob = Math.sin(this.bobTimer) * 5;
+                
+                ctx.save();
+                ctx.translate(this.x, this.y + bob);
+                
+                switch(this.type) {
+                    case 'health':
+                        // 체력 아이템 (십자가)
+                        ctx.fillStyle = '#00ff00';
+                        ctx.fillRect(-this.size * 0.3, -this.size, this.size * 0.6, this.size * 2);
+                        ctx.fillRect(-this.size, -this.size * 0.3, this.size * 2, this.size * 0.6);
+                        break;
+                }
+                
+                ctx.restore();
+            }
+        }
+        
+        // 파티클 클래스
+        class Particle {
+            constructor(x, y, color) {
+                this.x = x;
+                this.y = y;
+                this.vx = (Math.random() - 0.5) * 5;
+                this.vy = (Math.random() - 0.5) * 5;
+                this.color = color;
+                this.life = 30;
+                this.maxLife = 30;
+            }
+            
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.vx *= 0.95;
+                this.vy *= 0.95;
+                this.life--;
+                
+                return this.life <= 0;
+            }
+            
+            draw() {
+                const alpha = this.life / this.maxLife;
+                ctx.globalAlpha = alpha;
+                ctx.fillStyle = this.color;
+                ctx.fillRect(this.x - 2, this.y - 2, 4, 4);
+                ctx.globalAlpha = 1;
+            }
+        }
+        
+        // 게임 초기화
+        function initGame(tankType) {
+            gameState = 'playing';
+            score = 0;
+            enemies = [];
+            bullets = [];
+            items = [];
+            particles = [];
+            enemySpawnTimer = 0;
+            itemSpawnTimer = 0;
+            
+            // 플레이어 생성
+            player = new Tank(canvas.width / 2, canvas.height / 2, tankType, true);
+            
+            // UI 업데이트
+            document.getElementById('tankName').textContent = player.spec.name;
+            updateScore();
+            updateHealthBar();
+            
+            // 탱크 선택 화면 숨기기
+            document.getElementById('tankSelect').style.display = 'none';
+        }
+        
+        // 게임 업데이트
+        function update() {
+            if (gameState !== 'playing') return;
+            
+            // 플레이어 업데이트
+            player.update();
+            
+            // 적 업데이트
+            enemies = enemies.filter(enemy => {
+                enemy.update();
+                return true;
+            });
+            
+            // 총알 업데이트
+            bullets = bullets.filter(bullet => !bullet.update());
+            
+            // 아이템 업데이트
+            items = items.filter(item => !item.update());
+            
+            // 파티클 업데이트
+            particles = particles.filter(particle => !particle.update());
+            
+            // 적 스폰
+            enemySpawnTimer++;
+            if (enemySpawnTimer > 120) { // 2초마다
+                spawnEnemy();
+                enemySpawnTimer = 0;
+            }
+            
+            // 아이템 스폰
+            itemSpawnTimer++;
+            if (itemSpawnTimer > 300) { // 5초마다
+                spawnItem();
+                itemSpawnTimer = 0;
+            }
+        }
+        
+        // 렌더링
+        function render() {
+            // 배경
+            ctx.fillStyle = '#1a1a1a';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // 격자 패턴
+            ctx.strokeStyle = '#2a2a2a';
+            ctx.lineWidth = 1;
+            for (let x = 0; x < canvas.width; x += 50) {
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, canvas.height);
+                ctx.stroke();
+            }
+            for (let y = 0; y < canvas.height; y += 50) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(canvas.width, y);
+                ctx.stroke();
+            }
+            
+            // 아이템 그리기
+            items.forEach(item => item.draw());
+            
+            // 적 그리기
+            enemies.forEach(enemy => enemy.draw());
+            
+            // 플레이어 그리기
+            if (player && gameState === 'playing') {
+                player.draw();
+            }
+            
+            // 총알 그리기
+            bullets.forEach(bullet => bullet.draw());
+            
+            // 파티클 그리기
+            particles.forEach(particle => particle.draw());
+        }
+        
+        // 적 스폰
+        function spawnEnemy() {
+            const side = Math.floor(Math.random() * 4);
+            let x, y;
+            
+            switch(side) {
+                case 0: // 위
+                    x = Math.random() * canvas.width;
+                    y = -50;
+                    break;
+                case 1: // 오른쪽
+                    x = canvas.width + 50;
+                    y = Math.random() * canvas.height;
+                    break;
+                case 2: // 아래
+                    x = Math.random() * canvas.width;
+                    y = canvas.height + 50;
+                    break;
+                case 3: // 왼쪽
+                    x = -50;
+                    y = Math.random() * canvas.height;
+                    break;
+            }
+            
+            // 랜덤 탱크 타입
+            const types = ['light', 'medium', 'heavy'];
+            const type = types[Math.floor(Math.random() * types.length)];
+            
+            enemies.push(new Tank(x, y, type, false));
+        }
+        
+        // 아이템 스폰
+        function spawnItem() {
+            const x = Math.random() * (canvas.width - 100) + 50;
+            const y = Math.random() * (canvas.height - 100) + 50;
+            
+            items.push(new Item(x, y, 'health'));
+        }
+        
+        // UI 업데이트
+        function updateScore() {
+            document.getElementById('scoreValue').textContent = score;
+        }
+        
+        function updateHealthBar() {
+            const percentage = (player.health / player.spec.maxHealth) * 100;
+            document.getElementById('healthFill').style.width = percentage + '%';
+        }
+        
+        // 게임 오버
+        function gameOver() {
+            gameState = 'gameover';
+            document.getElementById('finalScore').textContent = score;
+            document.getElementById('gameOver').style.display = 'block';
+        }
+        
+        // 게임 재시작
+        function restartGame() {
+            document.getElementById('gameOver').style.display = 'none';
+            document.getElementById('tankSelect').style.display = 'block';
+            gameState = 'selecting';
+        }
+        
+        // 게임 루프
+        function gameLoop() {
+            update();
+            render();
+            requestAnimationFrame(gameLoop);
+        }
+        
+        // 이벤트 리스너
+        document.addEventListener('keydown', (e) => {
+            keys[e.key] = true;
+        });
+        
+        document.addEventListener('keyup', (e) => {
+            keys[e.key] = false;
+        });
+        
+        canvas.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            mouseX = e.clientX - rect.left;
+            mouseY = e.clientY - rect.top;
+        });
+        
+        canvas.addEventListener('click', (e) => {
+            if (gameState === 'playing' && player) {
+                player.fire();
+            }
+        });
+        
+        // 탱크 선택
+        document.querySelectorAll('.tankOption').forEach(option => {
+            option.addEventListener('click', function() {
+                const type = this.getAttribute('data-type');
+                initGame(type);
+            });
+        });
+        
+        // 게임 시작
+        gameLoop();
+    </script>
+</body>
+</html>
