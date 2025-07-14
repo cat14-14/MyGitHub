@@ -73,5 +73,6 @@
   },
 
   // ✅ Tailwind CSS 관련 경고 제거 설정
-  "css.lint.unknownAtRules": "ignore"
+  "css.lint.unknownAtRules": "ignore",
+  "dotnet.defaultSolution": "연습.sln"
 }
