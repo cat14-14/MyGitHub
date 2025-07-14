@@ -7,11 +7,11 @@ int main(void)
 
     for (int i = 0; i < n; i++)
     {
-        // 공백 출력
+
         for (int j = 0; j < i; j++)
             printf(" ");
 
-        // 별 출력
+
         for (int j = 0; j < 2 * (n - i) - 1; j++)
             printf("*");
 
