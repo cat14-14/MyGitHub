@@ -5,9 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>탱크 배틀 게임</title>
     <style>
-        body {
+        * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
             background: #1a1a1a;
             display: flex;
             justify-content: center;
@@ -19,13 +23,14 @@
         
         #gameContainer {
             position: relative;
-            background: #000;
-            border: 2px solid #444;
+            width: 1000px;
+            height: 700px;
         }
         
         canvas {
             display: block;
             background: #2a2a2a;
+            border: 2px solid #444;
         }
         
         #ui {
@@ -33,6 +38,7 @@
             top: 10px;
             left: 10px;
             z-index: 10;
+            display: none;
         }
         
         #healthBar {
@@ -56,30 +62,53 @@
         
         #tankSelect {
             position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.9);
-            padding: 30px;
-            border: 2px solid #666;
-            text-align: center;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
             z-index: 20;
         }
         
+        #tankSelect h2 {
+            margin-bottom: 30px;
+            font-size: 32px;
+        }
+        
+        .tankGrid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            max-width: 900px;
+        }
+        
         .tankOption {
-            display: inline-block;
-            margin: 10px;
-            padding: 20px;
             background: #333;
             border: 2px solid #666;
+            padding: 20px;
             cursor: pointer;
             transition: all 0.3s;
+            text-align: center;
         }
         
         .tankOption:hover {
             background: #444;
             border-color: #888;
             transform: scale(1.05);
+        }
+        
+        .tankOption h3 {
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        
+        .tankOption p {
+            font-size: 14px;
+            line-height: 1.5;
         }
         
         #gameOver {
@@ -124,34 +153,50 @@
         
         <div id="tankSelect">
             <h2>탱크를 선택하세요</h2>
-            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
-                <div class="tankOption" data-type="light">
+            <div class="tankGrid">
+                <div class="tankOption" onclick="selectTank('light')">
                     <h3>경전차</h3>
-                    <p>속도: ★★★★★<br>체력: ★★<br>공격력: ★★</p>
+                    <p>속도: ★★★★★<br>체력: ★★<br>데미지: 15</p>
                 </div>
-                <div class="tankOption" data-type="medium">
+                <div class="tankOption" onclick="selectTank('medium')">
                     <h3>중형전차</h3>
-                    <p>속도: ★★★<br>체력: ★★★<br>공격력: ★★★</p>
+                    <p>속도: ★★★<br>체력: ★★★<br>데미지: 30</p>
                 </div>
-                <div class="tankOption" data-type="heavy">
+                <div class="tankOption" onclick="selectTank('heavy')">
                     <h3>중전차</h3>
-                    <p>속도: ★<br>체력: ★★★★★<br>공격력: ★★★★★</p>
+                    <p>속도: ★<br>체력: ★★★★★<br>데미지: 60</p>
                 </div>
-                <div class="tankOption" data-type="special">
+                <div class="tankOption" onclick="selectTank('special')">
                     <h3>특수전차</h3>
-                    <p>속도: ★★★★<br>체력: ★★★<br>산탄포 발사</p>
+                    <p>속도: ★★★★<br>체력: ★★★<br>산탄포 (20x5)</p>
                 </div>
-                <div class="tankOption" data-type="sniper">
+                <div class="tankOption" onclick="selectTank('sniper')">
                     <h3>저격전차</h3>
-                    <p>속도: ★★☆<br>체력: ★★<br>초고속 탄환</p>
+                    <p>속도: ★★☆<br>체력: ★★<br>데미지: 100!</p>
                 </div>
-                <div class="tankOption" data-type="rapid">
+                <div class="tankOption" onclick="selectTank('rapid')">
                     <h3>속사전차</h3>
-                    <p>속도: ★★★☆<br>체력: ★★☆<br>빠른 연사</p>
+                    <p>속도: ★★★☆<br>체력: ★★☆<br>초고속 연사</p>
                 </div>
-                <div class="tankOption" data-type="flame">
+                <div class="tankOption" onclick="selectTank('flame')">
                     <h3>화염전차</h3>
-                    <p>속도: ★★★<br>체력: ★★★<br>화염 발사</p>
+                    <p>속도: ★★★<br>체력: ★★★<br>화염방사기</p>
+                </div>
+                <div class="tankOption" onclick="selectTank('laser')">
+                    <h3>레이저전차</h3>
+                    <p>속도: ★★★<br>체력: ★★☆<br>연속 레이저</p>
+                </div>
+                <div class="tankOption" onclick="selectTank('missile')">
+                    <h3>미사일전차</h3>
+                    <p>속도: ★★<br>체력: ★★★★<br>데미지: 80</p>
+                </div>
+                <div class="tankOption" onclick="selectTank('electric')">
+                    <h3>전기전차</h3>
+                    <p>속도: ★★★<br>체력: ★★★<br>범위 전격</p>
+                </div>
+                <div class="tankOption" onclick="selectTank('stealth')">
+                    <h3>스텔스전차</h3>
+                    <p>속도: ★★★★☆<br>체력: ★★<br>투명화 능력</p>
                 </div>
             </div>
         </div>
@@ -182,30 +227,30 @@
         const tankSpecs = {
             light: {
                 name: '경전차',
-                speed: 5,
-                maxHealth: 50,
-                bulletSpeed: 10,
-                bulletDamage: 10,
+                speed: 7,
+                maxHealth: 60,
+                bulletSpeed: 20,
+                bulletDamage: 15,
                 reloadTime: 20,
                 color: '#66ff66',
                 size: 25
             },
             medium: {
                 name: '중형전차',
-                speed: 3,
-                maxHealth: 100,
+                speed: 4,
+                maxHealth: 200,
                 bulletSpeed: 8,
-                bulletDamage: 20,
+                bulletDamage: 30,
                 reloadTime: 30,
                 color: '#6666ff',
                 size: 30
             },
             heavy: {
                 name: '중전차',
-                speed: 1.5,
-                maxHealth: 200,
+                speed: 2.5,
+                maxHealth: 400,
                 bulletSpeed: 6,
-                bulletDamage: 40,
+                bulletDamage: 90,
                 reloadTime: 50,
                 color: '#ff6666',
                 size: 35
@@ -215,7 +260,7 @@
                 speed: 4,
                 maxHealth: 80,
                 bulletSpeed: 8,
-                bulletDamage: 15,
+                bulletDamage: 20,
                 reloadTime: 40,
                 color: '#ff66ff',
                 size: 28,
@@ -223,10 +268,10 @@
             },
             sniper: {
                 name: '저격전차',
-                speed: 2.5,
-                maxHealth: 60,
+                speed: 3.5,
+                maxHealth: 80,
                 bulletSpeed: 15,
-                bulletDamage: 60,
+                bulletDamage: 150,
                 reloadTime: 80,
                 color: '#ffaa00',
                 size: 27,
@@ -236,22 +281,66 @@
                 name: '속사전차',
                 speed: 3.5,
                 maxHealth: 70,
-                bulletSpeed: 12,
-                bulletDamage: 8,
-                reloadTime: 10,
+                bulletSpeed: 40,
+                bulletDamage: 10,
+                reloadTime: 8,
                 color: '#00ffff',
                 size: 26
             },
             flame: {
                 name: '화염전차',
-                speed: 3,
-                maxHealth: 90,
-                bulletSpeed: 6,
-                bulletDamage: 5,
-                reloadTime: 5,
+                speed: 5,
+                maxHealth: 120,
+                bulletSpeed: 40,
+                bulletDamage: 20,
+                reloadTime: 3,
                 color: '#ff8800',
                 size: 30,
                 special: 'flame'
+            },
+            laser: {
+                name: '레이저전차',
+                speed: 4,
+                maxHealth: 75,
+                bulletSpeed: 40,
+                bulletDamage: 10,
+                reloadTime: 1,
+                color: '#00ff00',
+                size: 28,
+                special: 'laser'
+            },
+            missile: {
+                name: '미사일전차',
+                speed: 3,
+                maxHealth: 120,
+                bulletSpeed: 4,
+                bulletDamage: 100,
+                reloadTime: 60,
+                color: '#ff00ff',
+                size: 32,
+                special: 'missile'
+            },
+            electric: {
+                name: '전기전차',
+                speed: 4.5,
+                maxHealth: 300,
+                bulletSpeed: 0,
+                bulletDamage: 150,
+                reloadTime: 35,
+                color: '#00ffff',
+                size: 29,
+                special: 'electric'
+            },
+            stealth: {
+                name: '스텔스전차',
+                speed: 6,
+                maxHealth: 80,
+                bulletSpeed: 9,
+                bulletDamage: 35,
+                reloadTime: 25,
+                color: '#666666',
+                size: 24,
+                special: 'stealth'
             }
         };
         
@@ -277,6 +366,7 @@
                 this.reloadTimer = 0;
                 this.isPlayer = isPlayer;
                 this.size = this.spec.size;
+                this.stealthTimer = 0;
             }
             
             update() {
@@ -300,7 +390,7 @@
                     this.x += dx * this.spec.speed;
                     this.y += dy * this.spec.speed;
                     
-                    // 탱크 회전 (이동 방향으로)
+                    // 탱크 회전 (이동 방향으로) - 이동할 때만 회전
                     if (dx !== 0 || dy !== 0) {
                         const targetAngle = Math.atan2(dy, dx);
                         const angleDiff = targetAngle - this.angle;
@@ -324,6 +414,8 @@
                     this.y = Math.max(this.size, Math.min(canvas.height - this.size, this.y));
                 } else {
                     // AI 이동
+                    if (!player) return; // 플레이어가 없으면 리턴
+                    
                     const dx = player.x - this.x;
                     const dy = player.y - this.y;
                     const distance = Math.sqrt(dx * dx + dy * dy);
@@ -345,6 +437,11 @@
                 // 재장전 타이머
                 if (this.reloadTimer > 0) {
                     this.reloadTimer--;
+                }
+                
+                // 스텔스 타이머
+                if (this.stealthTimer > 0) {
+                    this.stealthTimer--;
                 }
             }
             
@@ -379,6 +476,7 @@
                             this.isPlayer
                         );
                         flameBullet.isFlame = true;
+                        flameBullet.lifetime = 30;
                         bullets.push(flameBullet);
                     }
                 } else if (this.spec.special === 'sniper') {
@@ -393,6 +491,76 @@
                     );
                     sniperBullet.size = 6;
                     bullets.push(sniperBullet);
+                } else if (this.spec.special === 'laser') {
+                    // 레이저 발사
+                    const laserBullet = new Bullet(
+                        this.x + Math.cos(this.turretAngle) * this.size,
+                        this.y + Math.sin(this.turretAngle) * this.size,
+                        this.turretAngle,
+                        this.spec.bulletSpeed,
+                        this.spec.bulletDamage,
+                        this.isPlayer
+                    );
+                    laserBullet.isLaser = true;
+                    bullets.push(laserBullet);
+                } else if (this.spec.special === 'missile') {
+                    // 미사일 발사
+                    const missileBullet = new Bullet(
+                        this.x + Math.cos(this.turretAngle) * this.size,
+                        this.y + Math.sin(this.turretAngle) * this.size,
+                        this.turretAngle,
+                        this.spec.bulletSpeed,
+                        this.spec.bulletDamage,
+                        this.isPlayer
+                    );
+                    missileBullet.isMissile = true;
+                    missileBullet.size = 8;
+                    bullets.push(missileBullet);
+                } else if (this.spec.special === 'electric') {
+                    // 전기 충격 (범위 공격) - 총알 없이 직접 데미지
+                    const targets = this.isPlayer ? enemies : [player];
+                    let hitAny = false;
+                    for (let target of targets) {
+                        if (!target) continue;
+                        const dx = target.x - this.x;
+                        const dy = target.y - this.y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        if (distance < 200) {
+                            target.takeDamage(this.spec.bulletDamage);
+                            hitAny = true;
+                            // 전기 이펙트
+                            for (let i = 0; i < 10; i++) {
+                                particles.push(new Particle(
+                                    this.x + (target.x - this.x) * i / 10,
+                                    this.y + (target.y - this.y) * i / 10,
+                                    '#00ffff'
+                                ));
+                            }
+                        }
+                    }
+                    // 전기 충격 시각 효과 (원형 파동)
+                    if (this.isPlayer || hitAny) {
+                        for (let angle = 0; angle < Math.PI * 2; angle += 0.5) {
+                            particles.push(new Particle(
+                                this.x + Math.cos(angle) * 50,
+                                this.y + Math.sin(angle) * 50,
+                                '#00ffff'
+                            ));
+                        }
+                    }
+                } else if (this.spec.special === 'stealth') {
+                    // 스텔스 발사 + 일시적 투명화
+                    bullets.push(new Bullet(
+                        this.x + Math.cos(this.turretAngle) * this.size,
+                        this.y + Math.sin(this.turretAngle) * this.size,
+                        this.turretAngle,
+                        this.spec.bulletSpeed,
+                        this.spec.bulletDamage,
+                        this.isPlayer
+                    ));
+                    if (this.isPlayer) {
+                        this.stealthTimer = 60;
+                    }
                 } else {
                     // 일반 발사
                     bullets.push(new Bullet(
@@ -439,6 +607,9 @@
             }
             
             draw() {
+                const alpha = this.stealthTimer > 0 ? 0.3 : 1;
+                ctx.globalAlpha = alpha;
+                
                 ctx.save();
                 
                 // 탱크 몸체
@@ -483,6 +654,8 @@
                 
                 ctx.restore();
                 
+                ctx.globalAlpha = 1;
+                
                 // 체력바 (적 탱크만)
                 if (!this.isPlayer && this.health < this.spec.maxHealth) {
                     ctx.fillStyle = '#333';
@@ -508,7 +681,7 @@
                 this.speed = speed;
                 this.damage = damage;
                 this.fromPlayer = fromPlayer;
-                this.size = 4;
+                this.size = 5;
             }
             
             update() {
@@ -519,6 +692,12 @@
                 if (this.x < 0 || this.x > canvas.width || 
                     this.y < 0 || this.y > canvas.height) {
                     return true;
+                }
+                
+                // 화염은 짧은 사거리
+                if (this.isFlame && this.lifetime) {
+                    this.lifetime--;
+                    if (this.lifetime <= 0) return true;
                 }
                 
                 // 충돌 검사
@@ -564,6 +743,24 @@
                     ctx.arc(this.x, this.y, this.size * 2, 0, Math.PI * 2);
                     ctx.fill();
                     ctx.globalAlpha = 1;
+                } else if (this.isLaser) {
+                    // 레이저 효과
+                    ctx.strokeStyle = '#00ff00';
+                    ctx.lineWidth = 3;
+                    ctx.beginPath();
+                    ctx.moveTo(this.x - Math.cos(this.angle) * 10, this.y - Math.sin(this.angle) * 10);
+                    ctx.lineTo(this.x + Math.cos(this.angle) * 10, this.y + Math.sin(this.angle) * 10);
+                    ctx.stroke();
+                } else if (this.isMissile) {
+                    // 미사일 효과
+                    ctx.fillStyle = '#ff00ff';
+                    ctx.fillRect(this.x - this.size/2, this.y - this.size/2, this.size, this.size);
+                    // 연기 효과
+                    particles.push(new Particle(
+                        this.x - Math.cos(this.angle) * this.size,
+                        this.y - Math.sin(this.angle) * this.size,
+                        '#888888'
+                    ));
                 }
                 
                 ctx.beginPath();
@@ -662,6 +859,12 @@
             }
         }
         
+        // 탱크 선택 함수
+        function selectTank(type) {
+            console.log('Selecting tank:', type);
+            initGame(type);
+        }
+        
         // 게임 초기화
         function initGame(tankType) {
             gameState = 'playing';
@@ -673,6 +876,11 @@
             enemySpawnTimer = 0;
             itemSpawnTimer = 0;
             
+            // 키 상태 초기화 (중요!)
+            for (let key in keys) {
+                keys[key] = false;
+            }
+            
             // 플레이어 생성
             player = new Tank(canvas.width / 2, canvas.height / 2, tankType, true);
             
@@ -681,8 +889,9 @@
             updateScore();
             updateHealthBar();
             
-            // 탱크 선택 화면 숨기기
+            // 탱크 선택 화면 숨기기, UI 보이기
             document.getElementById('tankSelect').style.display = 'none';
+            document.getElementById('ui').style.display = 'block';
         }
         
         // 게임 업데이트
@@ -709,14 +918,14 @@
             
             // 적 스폰
             enemySpawnTimer++;
-            if (enemySpawnTimer > 120) { // 2초마다
+            if (enemySpawnTimer > 230) { // 2초마다
                 spawnEnemy();
                 enemySpawnTimer = 0;
             }
             
             // 아이템 스폰
             itemSpawnTimer++;
-            if (itemSpawnTimer > 300) { // 5초마다
+            if (itemSpawnTimer > 200) { // 5초마다
                 spawnItem();
                 itemSpawnTimer = 0;
             }
@@ -728,43 +937,45 @@
             ctx.fillStyle = '#1a1a1a';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             
-            // 격자 패턴
-            ctx.strokeStyle = '#2a2a2a';
-            ctx.lineWidth = 1;
-            for (let x = 0; x < canvas.width; x += 50) {
-                ctx.beginPath();
-                ctx.moveTo(x, 0);
-                ctx.lineTo(x, canvas.height);
-                ctx.stroke();
+            if (gameState === 'playing') {
+                // 격자 패턴
+                ctx.strokeStyle = '#2a2a2a';
+                ctx.lineWidth = 1;
+                for (let x = 0; x < canvas.width; x += 50) {
+                    ctx.beginPath();
+                    ctx.moveTo(x, 0);
+                    ctx.lineTo(x, canvas.height);
+                    ctx.stroke();
+                }
+                for (let y = 0; y < canvas.height; y += 50) {
+                    ctx.beginPath();
+                    ctx.moveTo(0, y);
+                    ctx.lineTo(canvas.width, y);
+                    ctx.stroke();
+                }
+                
+                // 아이템 그리기
+                items.forEach(item => item.draw());
+                
+                // 적 그리기
+                enemies.forEach(enemy => enemy.draw());
+                
+                // 플레이어 그리기
+                if (player) {
+                    player.draw();
+                }
+                
+                // 총알 그리기
+                bullets.forEach(bullet => bullet.draw());
+                
+                // 파티클 그리기
+                particles.forEach(particle => particle.draw());
             }
-            for (let y = 0; y < canvas.height; y += 50) {
-                ctx.beginPath();
-                ctx.moveTo(0, y);
-                ctx.lineTo(canvas.width, y);
-                ctx.stroke();
-            }
-            
-            // 아이템 그리기
-            items.forEach(item => item.draw());
-            
-            // 적 그리기
-            enemies.forEach(enemy => enemy.draw());
-            
-            // 플레이어 그리기
-            if (player && gameState === 'playing') {
-                player.draw();
-            }
-            
-            // 총알 그리기
-            bullets.forEach(bullet => bullet.draw());
-            
-            // 파티클 그리기
-            particles.forEach(particle => particle.draw());
         }
         
         // 적 스폰
         function spawnEnemy() {
-            const side = Math.floor(Math.random() * 4);
+            const side = Math.floor(Math.random() * 5);
             let x, y;
             
             switch(side) {
@@ -786,8 +997,8 @@
                     break;
             }
             
-            // 랜덤 탱크 타입
-            const types = ['light', 'medium', 'heavy'];
+            // 랜덤 탱크 타입 (특수 탱크 제외)
+            const types = ['light', 'medium', 'heavy', 'sniper', 'rapid'];
             const type = types[Math.floor(Math.random() * types.length)];
             
             enemies.push(new Tank(x, y, type, false));
@@ -821,7 +1032,8 @@
         // 게임 재시작
         function restartGame() {
             document.getElementById('gameOver').style.display = 'none';
-            document.getElementById('tankSelect').style.display = 'block';
+            document.getElementById('tankSelect').style.display = 'flex';
+            document.getElementById('ui').style.display = 'none';
             gameState = 'selecting';
         }
         
@@ -851,14 +1063,6 @@
             if (gameState === 'playing' && player) {
                 player.fire();
             }
-        });
-        
-        // 탱크 선택
-        document.querySelectorAll('.tankOption').forEach(option => {
-            option.addEventListener('click', function() {
-                const type = this.getAttribute('data-type');
-                initGame(type);
-            });
         });
         
         // 게임 시작
