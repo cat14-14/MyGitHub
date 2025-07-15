@@ -1,5 +1,5 @@
 일반 키워드:
-	abstract
+	abstract : 
 	break
 	char
 	continue
