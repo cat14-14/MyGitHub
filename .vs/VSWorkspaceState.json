@@ -1,8 +1,11 @@
 {
   "ExpandedNodes": [
     "",
-    "\\C#"
+    "\\C#",
+    "\\C#\\백준",
+    "\\C#\\백준\\C#6-2523",
+    "\\C#\\백준\\C#7-2581"
   ],
-  "SelectedNode": "\\C#\\백준",
+  "SelectedNode": "\\C#\\백준\\C#7-2581\\Program.cs",
   "PreviewInSolutionExplorer": false
 }
