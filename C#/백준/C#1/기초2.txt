@@ -1,0 +1,97 @@
+	using System.Collections;
+	using System.Collections.Generic;
+	using UnityEngine;
+	public class PlayerCtrl : MonoBehaviour
+	{
+		public float moveSpeed = 10.0f;
+
+		void Start()
+		{	
+			tr = GetComponent<Transform>(); // 함수면, 형식(추출할 클래스), 인자(매개변수)
+		}
+
+		void Update()
+		{
+			float h = Input.GetAxis("Horizontal");
+			float v = INput.GetAxis("Vertical");
+
+			transform.position += new Vector3.forward * 1; // 전진 방향 * 속력
+		}
+	}
+Vector3.forward는 미리 정의된 전진 방향을 나타내는 정규화 벡터로, Vector3(0, 0, 1)과 동일합니다.
+이 단위 벡터에 time.deltaTime과 속력을 곱하면 moveSpeed 변수에 지정된 속도리 이동함
+v 변수는 키보드 입력값으로 up 화살표 키를 누르면 값으로 1.0f가 들어오고
+down 화살표 키를 누르면 -1.0f가 들어오며, 아무 키도 누르지 않으면 0.0f가 됩니다.
+tr.Translate(Vector3.forward * Time.deltaTime * v * moveSpeed);
+tr.Translate({이동할 방향} * Time.deltaTime * {전진/후진 변수} * {속도});
+
+public, private 접근 제한자
+	접근 제한자는 외부 클래스, 멤버 변수 등의 접근ㅇ르 허용하는 범위를 지정한다.
+	[접근제한자] class 클래스명
+	{
+
+	}
+	
+	변수
+	[접근제한자] 변수타입 변수명;
+	private Transform tr; //인스펙터 뷰에 노출되지 않음
+	public float moveSpeed = 10.0f; // 인스펙터 뷰에 노출됨 (유니티)
+
+	우선순위
+		스크립트를 처음 추가했을 떄 인스펙터 뷰에 노출된 moveSpeed 속성의 값은 스크립트가 지정한 10.0f이다
+		하지만 인스펙터 뷰에 노출된 moveSpeed 속성을 변경하면 스크립트 내에서 변숫값이 10.0f이더라도
+		인스펙터 뷰에서 설정한 20.0f가 적용된다.
+	SerializeField 속성
+		serializeField는 private 접근 지시자의 속성을 유지한 채 인스펙터 뷰에 노출할 수 있는 속성이다.
+		[SerializeField] private Transform tr; // 인스펙터 뷰에 노출됨
+		
+
+벡터의 덧셈 연산
+	좌우 이동을 구현
+	using System.Collections;
+	using System.Collections.Generic;
+	using UnityEngine;
+	public class PlayerCtrl : MonoBehaviour
+	{
+		private Transform tr;
+		public float moveSpeed = 10.0f;
+		void Start()
+		{	
+			tr = GetComponent<Transform>(); // 함수면, 형식(추출할 클래스), 인자(매개변수)
+		}
+
+		void Update()
+		{
+			float h = Input.GetAxis("Horizontal");
+			float v = INput.GetAxis("Vertical");
+
+			Vector3 moveDir = (Vector3.forward * v) + (Vector3.right * h);
+			// 전후좌우 이동 방향 벡터 계산
+			tr.Translate(moveDir * moveSpeed * Time.deltaTime);
+			// tr.translate 이동 방향 * 속력 * 시간
+		}
+	}
+	벡터의 방향 성분만 추출하기 위해 정규화 벡터로 변경 하려면 Vector.normalized를 사용
+	using System.Collections;
+	using System.Collections.Generic;
+	using UnityEngine;
+	public class PlayerCtrl : MonoBehaviour
+	{
+		private Transform tr;
+		public float moveSpeed = 10.0f;
+		void Start()
+		{	
+			tr = GetComponent<Transform>(); // 함수면, 형식(추출할 클래스), 인자(매개변수)
+		}
+
+		void Update()
+		{
+			float h = Input.GetAxis("Horizontal");
+			float v = INput.GetAxis("Vertical");
+
+			Vector3 moveDir = (Vector3.forward * v) + (Vector3.right * h);
+			// 전후좌우 이동 방향 벡터 계산
+			tr.Translate(moveDir.normalized * moveSpeed * Time.deltaTime);
+			// tr.translate 이동 방향 * 속력 * 시간
+		}
+	}

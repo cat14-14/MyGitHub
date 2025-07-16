@@ -469,3 +469,148 @@ Math 클래스
 			list.RemoveAt(i);
 		}
 	}
+
+InputManager
+	키보드, 마우스, 조이스틱 입력에 대한 조합을 미리 정의함.
+	Horizontal, Vertical, Firel, Jump, MouseX, MouseY, MouseScroll, MouseButton 등이 있음
+
+GetAxis 메서드
+	미리 설정한 키 조합의 반환 값은 input.GetAxis("input 조합의 이름") 함수를 이용해 가져올 수 있음
+
+	inputManager에 정의된 키보드 입력값을 받아오는 스크립트
+	using System.Collections;
+	using System.Collections.Generic;
+	using UnityEngine;
+	public class PlayerCtrl : MonoBehaviour
+	{
+	    void Start()
+		{
+
+		}
+
+		void Update()
+		{
+		    float h = Input.GetAxis("Horizontal");") // -1.0f ~ 0.0f ~ 1.0f 사이의 값
+			float v = Input.GetAxis("Vertical");	// -1.0f ~ 0.0f ~ 1.0f 사이의 값
+
+			Deug.Log("h=" + h);
+			Debug.Log("v=" + v);
+		}
+		GetAxisRaw : -1.0f 부터 1.0f 사이의 연속적인 값을 반환
+
+캐릭터 이동
+    캐릭터 이동이나 회전은 Transform 컴포넌트의 position, rotation 속성값을 지속해서 변경하는 것과
+	유니티 엔진에 내장된 물리 엔진을 이용해 물리적인 힘 또는 회전력을 변경시키는 것이다.
+	using System.Collections;
+	using System.Collections.Generic;
+	using UnityEngine;
+	public class PlayerCtrl : MonoBehaviour
+	{
+	    void Start()
+		{
+
+		}
+
+		void Update()
+		{
+		    float h = Input.GetAxis("Horizontal");
+			float v = INput.GetAxis("Vertical");
+
+			transform.position += new Vector3(h, 0, v); // x , y, z
+		}
+	}
+
+Vector3 구조체
+	유니티에서 3차원 좌표를 표현하는 구조체 벡터와 좌표값을 저장하기 위해 사용
+	정규화 벡터
+		벡터는 크기와 방향을 나타낼 수 있는 데이터 타입으로, 그중 각 축의 크기가 1인 벡터를
+		정규화 벡터 또는 단위 벡터라고 한다. 방향을 표시하는 벡터.
+		Vector3.forward : Vector3(0, 0, 1)
+		Vector3.back : Vector3(0, 0, -1)
+		Vector3.left : Vector3(-1, 0, 0)
+		Vector3.right : Vector3(1, 0, 0)
+		Vector3.up : Vector3(0, 1, 0)
+		Vector3.down : Vector3(0, -1, 0)
+		Vector3.one : Vector3(1, 1, 1)
+		Vector3.zero : Vector3(0, 0, 0)
+		유니티는 왼손 좌표계를 사용함, 왼손 엄지가 x, 검지가 y, 중지가 z축임 (e모양 만들어서 보면 쉬움)
+		x,y,z축은 r,g,b 색상에 대응함
+		x = 빨강, y = 초록, z = 파랑
+		using System.Collections;
+		using System.Collections.Generic;
+		using UnityEngine;
+		public class PlayerCtrl : MonoBehaviour
+		{
+			void Start()
+			{
+
+			}
+
+			void Update()
+			{
+				float h = Input.GetAxis("Horizontal");
+				float v = INput.GetAxis("Vertical");
+
+				transform.position += new Vector3.forward * 1; // 전진 방향 * 속력
+			}
+		}
+
+컴포넌트 캐시 처리
+	Update 함수는 프레임마다 한 번씩 호출되는 함수, 최적화에 주위를 기울여야한다.
+	이동 로직은 Transform 컴포넌트의 position 속성을 조금씩 변경하는 것으로 
+	프레임마다 Transform 컴포넌트에 접근하는 방식은 바람직하지 않다.
+	Update 함수 안에서 Transform 컴포넌트의 멤버 변수 transform을 사용했는데,
+	이를 미리 변수에 담아두고 해당 변수에 접근하는 방식이 미세하지만 빠르다.
+	컴포넌트를 Awake 함수나 Start 함수에서 미리 변수에 할당 후에 그 변수를 통해 사용하는 것이 좋다.
+	using System.Collections;
+	using System.Collections.Generic;
+	using UnityEngine;
+	public class PlayerCtrl : MonoBehaviour
+	{
+		private Transform tr; // 컴포넌트를 키시 처리할 변수
+		void Start()
+		{	
+			tr = GetComponent<Transform>(); // 함수면, 형식(추출할 클래스), 인자(매개변수)
+		}
+
+		void Update()
+		{
+			float h = Input.GetAxis("Horizontal");
+			float v = INput.GetAxis("Vertical");
+
+			transform.position += new Vector3.forward * 1; // 전진 방향 * 속력
+		}
+	}
+
+	this 키워드 : 해당 클래스(스크립트) 내부에서 자신을 가리키는 키워드
+
+	Translate 함수
+		Transform 컴포넌트의 position 속성값을 계산해 이동하는 방식
+		void Translate(Vector3 direction, [Space relativeTo])
+		void Update()
+		{
+			tr.Translate(Vector3.forward * 1); // 전진 방향 * 속력
+		}
+		Translate 함수의 두 번째 인자는 월드 좌표(Space.World) 기준으로 이동할지
+		로컬 좌표(Space.Self) 기준으로 이동할지를 결정하는 인자이다. 생략하면 로컬 좌표를 기준으로 이동
+
+	Time.deltaTIme
+		Time.deltaTime은 이전 프레임의 시작 시각부터 현재 프레임이 시작되는 시각의 차(델타) 를 말함
+		이전 프레임부터 현재 프레임까지 걸린 시간의 차.
+		밑에 코드는 1프레임마다 10유닛을 이동하는 코드. 게임이 초당 30프레임으로 구동된다면
+		Update 함수는 초당 30번 호출되므로 총 300유닛을 이동한다.
+		void Update()
+		{
+			tr.Translate(Vector3.forward * 10);
+		}
+		60프레임은 600유닛을 이동한다. 다른 환경에서 실행하면 속도가 달라지는 문제를 해결하기 위해
+		TIme.deltaTime을 곱해준다. 30프레임으로 구동되는 기기의 TIme.deltaTime은 0.033초이고
+		10을 곱하면 1/3초가 된다. 초당 30프레임이라고 했을 떄 30을 마저 곱하면 결국 초당 10유닛을 이동
+		void Update()
+		{
+			tr.Translate(Vector3.forward * TIme.deltaTIme * 10);
+		}
+
+	Vector3.forward
+		Vector3.forward는 미리 정의된 전진 방향을 나타내는 정규화 벡토로 Vector3(0, 0, 1)과 동일합니다.
+		이 단위 벡터에 Time.deltaTime과 속력을 곱하면 moveSpeed 변수에 지정한 속도로 이동
