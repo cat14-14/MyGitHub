@@ -1,0 +1,15 @@
+C:\Users\김은호\Desktop\cat14-14\MyGitHub\C#\C#1\obj\Debug\net9.0\C#1.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\김은호\Desktop\cat14-14\MyGitHub\C#\C#1\obj\Debug\net9.0\C#1.AssemblyInfoInputs.cache
+C:\Users\김은호\Desktop\cat14-14\MyGitHub\C#\C#1\obj\Debug\net9.0\C#1.AssemblyInfo.cs
+C:\Users\김은호\Desktop\cat14-14\MyGitHub\C#\C#1\obj\Debug\net9.0\C#1.csproj.CoreCompileInputs.cache
+C:\Users\김은호\Desktop\cat14-14\MyGitHub\C#\C#1\obj\Debug\net9.0\C#1.sourcelink.json
+C:\Users\김은호\Desktop\cat14-14\MyGitHub\C#\C#1\bin\Debug\net9.0\C#1.exe
+C:\Users\김은호\Desktop\cat14-14\MyGitHub\C#\C#1\bin\Debug\net9.0\C#1.deps.json
+C:\Users\김은호\Desktop\cat14-14\MyGitHub\C#\C#1\bin\Debug\net9.0\C#1.runtimeconfig.json
+C:\Users\김은호\Desktop\cat14-14\MyGitHub\C#\C#1\bin\Debug\net9.0\C#1.dll
+C:\Users\김은호\Desktop\cat14-14\MyGitHub\C#\C#1\bin\Debug\net9.0\C#1.pdb
+C:\Users\김은호\Desktop\cat14-14\MyGitHub\C#\C#1\obj\Debug\net9.0\C#1.dll
+C:\Users\김은호\Desktop\cat14-14\MyGitHub\C#\C#1\obj\Debug\net9.0\refint\C#1.dll
+C:\Users\김은호\Desktop\cat14-14\MyGitHub\C#\C#1\obj\Debug\net9.0\C#1.pdb
+C:\Users\김은호\Desktop\cat14-14\MyGitHub\C#\C#1\obj\Debug\net9.0\C#1.genruntimeconfig.cache
+C:\Users\김은호\Desktop\cat14-14\MyGitHub\C#\C#1\obj\Debug\net9.0\ref\C#1.dll

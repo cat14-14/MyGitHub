@@ -1,0 +1,288 @@
+일반 키워드:
+	abstract : 
+	break
+	char
+	continue
+	do
+	event
+	finally
+	foreach
+	in
+	is
+	new 
+	out
+	protected
+	return
+	sizeof
+	struct
+	TRUE
+	ulong
+	using
+	while
+	as
+	byte
+	checked
+	decimal
+	double
+	explicit
+	fixed
+	goto
+	int
+	lock
+	null
+	override
+	public
+	sbyte
+	stackalloc
+	switch
+	try
+	unchecked
+	virtual
+	base
+	case
+	class
+	default
+	else
+	extern
+	float
+	if
+	interface
+	long
+	object
+	params
+	readonly
+	sealed
+	static
+	this
+	typeof
+	unsafe
+	void
+	bool
+	catch
+	const
+	delegate
+	enum
+	FALSE
+	for
+	implicit
+	internal
+	namespeace
+	operator
+	private
+	ref
+	short
+	string
+	throw
+	uint
+	ushort
+	volatile
+	namespace
+
+컨텍스트 키워드(문맥 키워드)
+	add
+	await
+	equals
+	group
+	nameof
+	remove
+	var
+	alias
+	by
+	from
+	into
+	on
+	select
+	when
+	ascending
+	descending
+	get
+	join
+	orderby
+	set
+	where
+	async
+	dynamic
+	global
+	let
+	partial
+	value
+	yield
+
+
+식별자
+	식별자는 이름을 붙일 때 사용하는 단어입니다. 변수와 메서드 이름으로 사용함
+	규칙:
+		키워드를 사용하면 안 된다.
+		특수 문자는 _만 허용한다.
+		숫자로 시작하면 안된다.
+		공백은 입력하면 안된다.
+
+주석
+	주석은 코드에 대한 설명을 작성할 때 사용합니다.
+	한 줄 주석: //로 시작하는 줄
+	여러 줄 주석: /*로 시작하고 */로 끝나는 부분
+	예시:
+	// 이것은 한 줄 주석입니다.
+	/*
+	이것은
+	여러 줄
+	주석입니다.
+	*/
+
+이스케이프 문자
+	\t : 탭 문자
+	\n : 줄 바꿈 문자
+	\\ : 백슬래시 문자
+	\" : 큰따옴표 문자
+
+문자열 연결 연산자
+	+로 문자열을 서로 연결함
+	console.WriteLine("Hello, " + "World!"); // 출력: Hello, World!
+
+인덱스
+	console.writeline("Hello"[0]); // 출력: H")
+
+변수
+	int : 4바이트 정수
+	long : 8바이트 정수
+	float : 4바이트 부동 소수점
+	double : 8바이트 부동 소수점
+	char : 2바이트 문자
+	string : 문자열
+	bool : 참 또는 거짓
+
+자료형 확인 메서드
+	typeof() : 자료형을 반환함
+	instanceof() : 객체가 특정 자료형인지 확인함
+
+형 변환
+	명시적 형 변환: (자료형)값
+	암시적 형 변환: 자료형 변수 = 값;
+	예시:
+	int num = 10;
+	double dNum = (double)num; // 명시적 형 변환
+	float fNum = num; // 암시적 형 변환
+
+var 키워드
+    var : 자료형을 자동으로 지정합니다.
+	한 번 지정된 자료형은 계속 유지됩니다.
+	조건:
+		초기화할 때만 사용 가능
+		변수 선언 시에만 사용 가능
+		변수의 자료형이 명확할 때만 사용 가능
+		지역 변수로 선언해야함
+		변수를 선언과 동시에 초기화해야함
+
+console.ReadLine() : 콘솔에서 입력을 받는 메서드
+console.WriteLine() : 콘솔에 출력을 하는 메서드
+
+문자열을 숫자로 변환하는 메서드
+	int.Parse() : 문자열을 int로 변환
+	long.Parse() : 다른 자료형을 long으로 변경
+	float.Parse() : 자료형을 float로 변경
+	double.Parse() : 자료형을 double로 변경
+	
+다른 자료형을 문자열로 변환
+	ToString() : 모든 자료형을 문자열로 변환
+	int를 문자열로 : (10).ToString()
+	double을 문자열로 : (10.5).ToString()
+	char를 문자열로 : ('A').ToString()
+
+간단한 문자열 변환
+	 문자열과 다른 자료형을 더하면 문자열 연결을 수행하게 된다.
+
+if 조건문
+	if (조건) {
+		// 조건이 참일 때 실행되는 코드
+	} else {
+		// 조건이 거짓일 때 실행되는 코드
+	}
+
+현재 시간 구하기
+	writeLine(DateTime.Now.Year); // 현재 시간을 출력)
+
+swotch 조건문
+	switch(비교할 값)
+	{
+		case 값:
+			문장
+			break;
+		default:
+			문장// 모든 case에 해당하지 않을 때 실행되는 코드
+			break;
+	}
+
+삼항 연산자:
+	불_표현식 ? 참 : 거짓
+	number %2 == 0 > true : false;
+
+ReadKey() 메서드
+	키를 입력받는 메서드
+	ConsoleKeyInfo 객체를 받음
+	char 자료형
+	consoleKey는 키보드에 있는 키를 입력 받을 수 있음
+	consolekey.UpArrow : 위쪽 화살표 키
+	consolekey.DownArrow : 아래쪽 화살표 키
+	예시:
+		ConsoleKeyInfo keyInfo = Console.ReadKey();
+		if (keyInfo.Key == ConsoleKey.UpArrow) {
+			Console.WriteLine("위쪽 화살표 키가 눌렸습니다.");
+		} else if (keyInfo.Key == ConsoleKey.DownArrow) {
+			Console.WriteLine("아래쪽 화살표 키가 눌렸습니다.");
+		} else {
+			Console.WriteLine("다른 키가 눌렸습니다.");
+		}
+
+반복문과 배열
+	string[] names = { "Alice", "Bob", "Charlie" };
+	int[] intArray = { 1, 2, 3, 4, 5 };
+	long[] longArray = { 10000000000, 20000000000, 30000000000 };
+	float[] floatArray = { 1.1f, 2.2f, 3.3f };
+	double[] doubleArray = { 1.1, 2.2, 3.3 };
+	chasr[] charArray = { 'A', 'B', 'C' };
+	배열이름, Length : 배열의 길이를 반환함
+foreach 반복문
+	foreach (자료형 변수 in 배열이름(컬렉션) {
+		// 각 요소에 대해 실행되는 코드
+	}
+	string[] names = { "Alice", "Bob", "Charlie" };
+	foreach (string name in names) {
+		Console.WriteLine(name);
+	}
+
+별 찍기:
+	static void Main(string][] args)
+	{
+		for(int i=0; i<10; i++)
+		{
+			for(int j=0; j<i+1; j++)
+			{
+				Console.Write("*");
+			}
+			console.Write("\n");")
+		}
+	}
+		
+문자열 처리
+	ToUpper() : 문자열을 대문자로 변환
+	ToLower() : 문자열을 소문자로 변환
+	Trim() : 문자열의 앞뒤 공백을 제거
+	TrimStart() : 문자열의 앞쪽 공백을 제거
+	TrimEnd() : 문자열의 뒤쪽 공백을 제거
+	Split() : 문자열을 특정 문자로 분리하여 배열로 반환
+		string str = "apple,banana,orange";
+		string[] fruits = str.Split(','); // fruits 배열에는 "apple", "banana", "orange"가 저장됨
+		string[] inputs = input.split(new char[] { ' ' });
+	Contains() : 문자열에 특정 문자가 포함되어 있는지 확인
+	string.join() : 문자열 배열을 특정 문자로 연결하여 하나의 문자열로 만듭니다.
+		string[] words = { "Hello", "World" };
+		string result = string.Join(" ", words); // result는 "Hello World"가 됨
+	console.clear() : 콘솔 화면을 지웁니다.
+	console.setcursorposition() : 커서 위치를 설정합니다.
+		자신이 원하는 위치에 글자를 출력할 수 있음.
+		Console.SetCursorPosition(0, 0); // 콘솔의 맨 위 왼쪽으로 커서를 이동
+	Thread.Sleep() : 프로그램을 일정 시간 동안 멈춥니다.
+		Thread.Sleep(1000); // 1초 동안 멈춤
+		using system.Threading; // Thread.Sleep() 메서드를 사용하기 위해 필요합니다.
+
+	
