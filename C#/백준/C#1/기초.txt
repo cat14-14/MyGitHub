@@ -285,4 +285,187 @@ foreach 반복문
 		Thread.Sleep(1000); // 1초 동안 멈춤
 		using system.Threading; // Thread.Sleep() 메서드를 사용하기 위해 필요합니다.
 
+사용자 정의 자료형
+	객체가 가지는 속성을 하나로 묶어서 다룰 수 있음
+	class car
+	{
+		int carNumber;
+		int inTime;
+		int outTime;
+	}
+	static void Main(string[] args)
+	{
+		Car[] cars = enw Car[100];
+	}
 	
+	class Car
+	{
+		int carNumber;
+		DateTime inTime;
+		DateTime outTime;
+		public SetInTime()
+		{
+			this.inTime = DateTime.Now;
+		}
+		public SetOutTime()
+		{
+			this.outTime = DateTime.Now;
+		}
+	}
+	static void Main(string[] args)
+	{
+		Car car = new Car();
+		car.SetInTime();
+		car.SetOutTime();
+	}
+	Car car = new Car();
+	클래스, 인스턴스, new 키워드, 생성자
+
+클래스 사용
+random 클래스
+	임의의 숫자를 생성할 때에 사용한다.
+	Random random = new Random();
+	Random 클래스의 Next() 메서드는 임의의 정수를 생성할 때에 사용
+	예시:
+		Random random = new Random();
+		WriteLine(random.Next(10, 100)); // 10부터 99까지의 임의의 정수 생성
+	NextDouble() 메서드는 0.0 이상 1.0 미만의 임의의 실수를 생성할 때에 사용
+	원하는 범위의 실수를 생성하려면 다음과 같이 사용
+		WriteLine(random.NextDouble() * 10); // 0.0 이상 10.0 미만의 임의의 실수 생성
+List 클래스
+	배열은 크기가 고정되어 있다.
+	List<int> list = new List<int>();
+	List<int> list = new List<int>() { 52, 252, 231, 65, 876, 1, 2 };
+	Add() 메서드를 사용하면 리스트에 요소를 추가할 수 있다.
+		list.Add(요소)
+	Remove() 메서드를 사용하여 변수로 넣은 요소를 제거함
+Math 클래스
+	수학과 관련된 변수 또는 메서드를 제공, 인스턴스를 만들지 않고 사용
+	Math.멤버 
+	멤버
+		Abs(숫자) : 절대 값을 구함.
+		Ceiling(숫자) : 지정된 숫자보다 크거나 같은 최소 정수를 구함
+		Fllor(숫자) : 지정된 숫자보다 작거나 같은 최대 정수를 구함
+		Max(숫자, 숫자) : 두 개의 매개변수 중에서 큰 값을 구함.
+		Min(숫자, 숫자) : 두 개의 매개변수 중에 작은 값을 구함
+		Round(숫자) : 반올림함.
+
+클래스 생성
+	class [클래스 이름]
+	{
+	
+	}
+	클래스 내부에 클래스 생성
+	class Program
+	{
+		class FirstClass
+		{
+		
+		}
+		class SecondClass
+		{
+		
+		}
+		static void Main()
+		{
+		
+		}
+	}
+	클래스 파일
+	using system;
+	using system.파일이름
+
+클래스의 변수
+인스턴스 변수
+	[인스턴스],[변수이름]의 형태로 사용
+	[접근 제한자] [자료형] [이름] 형태로 생성
+	접근 제한자 : public, private
+	static void Main(string[] args)
+	{
+		Product product = new product();
+		product.name = "감자";
+		product.price = 2000;
+		WriteLine(product.name + " : " + product.price + "원");
+	}
+		static void Main(string[] args)
+	{
+		Product product = new product() { name = "감자", price = 2000 };
+	}
+
+	클래스 변수 생성 사용
+	[접근 제한자] static [자료형] [이름] = 값;
+	class program
+	{
+		class MyMath
+		{
+			public static double Pi = 3.14;
+		}
+		static void Main(string[] args)
+		{
+			WriteLine(MyMath.Pi); // 3.14 출력
+		}
+	}
+
+추상화
+	추상화는 객체의 복잡성을 줄이고, 필요한 부분만을 표현하는 것입니다.
+	클래스 내부에 추상 메서드를 정의하고, 이를 상속받은 클래스에서 구현합니다.
+	추상 클래스는 인스턴스를 만들 수 없고, 반드시 상속받아야 합니다.
+	abstract class Animal
+	{
+		public abstract void Speak();
+	}
+	class Dog : Animal
+	{
+		public override void Speak()
+		{
+			WriteLine("멍멍");
+		}
+	}
+	static void Main(string[] args)
+	{
+		Dog dog = new Dog();
+		dog.Speak(); // 멍멍 출력
+	}
+	학생 추상화
+	class Student
+	{
+		public string id;
+		public string name;
+		public int grade;
+		public string major;
+		public DateTime birthday;
+	}
+
+함께하는 응용예제
+	모델 클래스와 list클래스
+	class program
+	{
+		class student
+		{
+			public string name;
+			public int grade;
+		}
+		static void Main(string[] args)
+		{
+			List<student> list = new List<student>();
+			List.Add(new student() { name = "윤인성", grade = 1 });
+			......
+			foreach(var item in list)
+			{
+				WriteLine(item.name + " : " + item.grade);
+			}
+		}
+	}
+
+	리스트 요소 제거
+	Remove(object element) : 특정 요소를 리스트에서 제거(객체 지정)
+	RemoveAt(int index) : 특정 위치에 있는 요소를 리스트에서 제거(인덱스를 지정)
+
+	리스트의 요소를 제거할 때는 반드시 역 for 반복문을 사용
+	for(int i=list.count-1; i>=0; i--)
+	{
+		if(list[i].grade > 1)
+		{
+			list.RemoveAt(i);
+		}
+	}
