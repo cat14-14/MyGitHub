@@ -1,0 +1,15 @@
+C:\Users\김은호\Desktop\cat14-14\MyGitHub\C#\백준\C#10-2675\bin\Debug\net9.0\C#10-2675.exe
+C:\Users\김은호\Desktop\cat14-14\MyGitHub\C#\백준\C#10-2675\bin\Debug\net9.0\C#10-2675.deps.json
+C:\Users\김은호\Desktop\cat14-14\MyGitHub\C#\백준\C#10-2675\bin\Debug\net9.0\C#10-2675.runtimeconfig.json
+C:\Users\김은호\Desktop\cat14-14\MyGitHub\C#\백준\C#10-2675\bin\Debug\net9.0\C#10-2675.dll
+C:\Users\김은호\Desktop\cat14-14\MyGitHub\C#\백준\C#10-2675\bin\Debug\net9.0\C#10-2675.pdb
+C:\Users\김은호\Desktop\cat14-14\MyGitHub\C#\백준\C#10-2675\obj\Debug\net9.0\C#10-2675.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\김은호\Desktop\cat14-14\MyGitHub\C#\백준\C#10-2675\obj\Debug\net9.0\C#10-2675.AssemblyInfoInputs.cache
+C:\Users\김은호\Desktop\cat14-14\MyGitHub\C#\백준\C#10-2675\obj\Debug\net9.0\C#10-2675.AssemblyInfo.cs
+C:\Users\김은호\Desktop\cat14-14\MyGitHub\C#\백준\C#10-2675\obj\Debug\net9.0\C#10-2675.csproj.CoreCompileInputs.cache
+C:\Users\김은호\Desktop\cat14-14\MyGitHub\C#\백준\C#10-2675\obj\Debug\net9.0\C#10-2675.sourcelink.json
+C:\Users\김은호\Desktop\cat14-14\MyGitHub\C#\백준\C#10-2675\obj\Debug\net9.0\C#10-2675.dll
+C:\Users\김은호\Desktop\cat14-14\MyGitHub\C#\백준\C#10-2675\obj\Debug\net9.0\refint\C#10-2675.dll
+C:\Users\김은호\Desktop\cat14-14\MyGitHub\C#\백준\C#10-2675\obj\Debug\net9.0\C#10-2675.pdb
+C:\Users\김은호\Desktop\cat14-14\MyGitHub\C#\백준\C#10-2675\obj\Debug\net9.0\C#10-2675.genruntimeconfig.cache
+C:\Users\김은호\Desktop\cat14-14\MyGitHub\C#\백준\C#10-2675\obj\Debug\net9.0\ref\C#10-2675.dll
