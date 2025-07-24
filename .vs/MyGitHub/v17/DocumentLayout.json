@@ -3,8 +3,12 @@
   "WorkspaceRootPath": "C:\\Users\\\uAE40\uC740\uD638\\Desktop\\cat14-14\\MyGitHub\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{00F2D704-36F7-424E-9D39-5680CCCAEB24}|C#\\\uBC31\uC900\\C#12-2857\\C#12-2857.csproj|c:\\users\\\uAE40\uC740\uD638\\desktop\\cat14-14\\mygithub\\c#\\\uBC31\uC900\\c#12-2857\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{00F2D704-36F7-424E-9D39-5680CCCAEB24}|C#\\\uBC31\uC900\\C#12-2857\\C#12-2857.csproj|solutionrelative:c#\\\uBC31\uC900\\c#12-2857\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\\uAE40\uC740\uD638\\Desktop\\cat14-14\\MyGitHub\\\uD559\uC6D0\\\uAE30\uCD081.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:\uD559\uC6D0\\\uAE30\uCD081.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\\uAE40\uC740\uD638\\Desktop\\cat14-14\\MyGitHub\\C#\\\uBC31\uC900\\C#12-2857\\Program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:C#\\\uBC31\uC900\\C#12-2857\\Program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\\uAE40\uC740\uD638\\Desktop\\cat14-14\\MyGitHub\\C#\\\uBC31\uC900\\C#1\\\uAE30\uCD082.txt||{8B382828-6202-11D1-8870-0000F87579D2}",
@@ -27,19 +31,32 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "\uAE30\uCD081.c",
+              "DocumentMoniker": "C:\\Users\\\uAE40\uC740\uD638\\Desktop\\cat14-14\\MyGitHub\\\uD559\uC6D0\\\uAE30\uCD081.c",
+              "RelativeDocumentMoniker": "\uD559\uC6D0\\\uAE30\uCD081.c",
+              "ToolTip": "C:\\Users\\\uAE40\uC740\uD638\\Desktop\\cat14-14\\MyGitHub\\\uD559\uC6D0\\\uAE30\uCD081.c",
+              "RelativeToolTip": "\uD559\uC6D0\\\uAE30\uCD081.c",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000423|",
+              "WhenOpened": "2025-07-24T10:43:43.975Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Users\\\uAE40\uC740\uD638\\Desktop\\cat14-14\\MyGitHub\\C#\\\uBC31\uC900\\C#12-2857\\Program.cs",
               "RelativeDocumentMoniker": "C#\\\uBC31\uC900\\C#12-2857\\Program.cs",
               "ToolTip": "C:\\Users\\\uAE40\uC740\uD638\\Desktop\\cat14-14\\MyGitHub\\C#\\\uBC31\uC900\\C#12-2857\\Program.cs",
               "RelativeToolTip": "C#\\\uBC31\uC900\\C#12-2857\\Program.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABwAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAABsAAAAAAAAAAAAAABwAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-07-17T12:49:43.53Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "\uAE30\uCD082.txt",
               "DocumentMoniker": "C:\\Users\\\uAE40\uC740\uD638\\Desktop\\cat14-14\\MyGitHub\\C#\\\uBC31\uC900\\C#1\\\uAE30\uCD082.txt",
               "RelativeDocumentMoniker": "C#\\\uBC31\uC900\\C#1\\\uAE30\uCD082.txt",
@@ -47,8 +64,7 @@
               "RelativeToolTip": "C#\\\uBC31\uC900\\C#1\\\uAE30\uCD082.txt",
               "ViewState": "AgIAAEwAAAAAAAAAAAAAAGEAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003109|",
-              "WhenOpened": "2025-07-16T11:18:30.558Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-07-16T11:18:30.558Z"
             }
           ]
         }
