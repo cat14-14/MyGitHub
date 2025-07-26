@@ -1,76 +1,128 @@
 #include <stdio.h>
-// #include <conio.h>   // _getch() 사용
-#include <stdlib.h>  // system("cls")
+#include <stdlib.h>
+#include <time.h>
 
-#define ROW 8
-#define COL 13
+#define LOTTO_PRICE 1000
 
-char maze[ROW][COL + 1] = {
-    "#############",
-    "#@..#.......#",
-    "##.#.###.##.#",
-    "#..#...#....#",
-    "#.#.#.#.#####",
-    "#.#.#.#.....#",
-    "#.#.#.###.#E#",
-    "#...........#"
-};
-
-int playerX = 1;
-int playerY = 1;
-
-void drawMaze() {
-    system("cls");  // 콘솔 화면 클리어
-    for (int i = 0; i < ROW; i++) {
-        printf("%s\n", maze[i]);
+void generateLotto(int lotto[]) {
+    int count = 0;
+    while (count < 6) {
+        int num = rand() % 45 + 1;
+        int duplicate = 0;
+        for (int i = 0; i < count; i++) {
+            if (lotto[i] == num) {
+                duplicate = 1;
+                break;
+            }
+        }
+        if (!duplicate)
+            lotto[count++] = num;
     }
-    printf("\n[WASD 키로 이동] [E 지점 도달 시 클리어]\n");
 }
 
-int movePlayer(char input) {
-    int dx = 0, dy = 0;
-
-    switch (input) {
-        case 'w': case 'W': dx = -1; break;
-        case 's': case 'S': dx =  1; break;
-        case 'a': case 'A': dy = -1; break;
-        case 'd': case 'D': dy =  1; break;
-        default: return 0;  // 무시
+int countMatches(int user[], int win[]) {
+    int match = 0;
+    for (int i = 0; i < 6; i++) {
+        for (int j = 0; j < 6; j++) {
+            if (user[i] == win[j])
+                match++;
+        }
     }
+    return match;
+}
 
-    int nx = playerX + dx;
-    int ny = playerY + dy;
-
-    if (maze[nx][ny] == '#' || nx < 0 || ny < 0 || nx >= ROW || ny >= COL)
-        return 0;
-
-    if (maze[nx][ny] == 'E') {
-        return 1;  // 탈출 성공
-    }
-
-    // 이동 처리
-    maze[playerX][playerY] = '.';
-    playerX = nx;
-    playerY = ny;
-    maze[playerX][playerY] = '@';
-
+int getReward(int match) {
+    if (match == 6) return 2000000;
+    if (match == 5) return 1000000;
+    if (match == 4) return 50000;
+    if (match == 3) return 5000;
     return 0;
 }
 
-int main() {
-    while (1) {
-        drawMaze();
-        char input;
-        printf("이동할 방향을 입력하세요: ");
-        input = getchar();
-        while (getchar() != '\n'); // 입력 버퍼 비우기
+void playLotto(int *money) {
+    if (*money < LOTTO_PRICE) {
+        printf("자금이 부족하여 로또를 구매할 수 없습니다.\n\n");
+        return;
+    }
 
-        if (movePlayer(input)) {
-            drawMaze();
-            printf("\n🎉 축하합니다! 미로를 탈출했습니다!\n");
+    int user[6], win[6];
+    *money -= LOTTO_PRICE;
+
+    generateLotto(user);
+    generateLotto(win);
+
+    printf("내 번호: ");
+    for (int i = 0; i < 6; i++) printf("%d ", user[i]);
+    printf("\n");
+
+    printf("당첨 번호: ");
+    for (int i = 0; i < 6; i++) printf("%d ", win[i]);
+    printf("\n");
+
+    int match = countMatches(user, win);
+    int reward = getReward(match);
+
+    if (reward > 0)
+        printf("%d개 일치! 보상: %d원\n", match, reward);
+    else
+        printf("%d개 일치! 꽝입니다.\n", match);
+
+    *money += reward;
+    printf("현재 자금: %d원\n\n", *money);
+}
+
+void playNumberGuess() {
+    int target = rand() % 100 + 1;
+    int guess;
+
+    printf("1부터 100 사이의 숫자를 맞혀보세요!\n");
+
+    while (1) {
+        printf("입력: ");
+        scanf("%d", &guess);
+
+        if (guess < 1 || guess > 100) {
+            printf("1~100 사이 숫자를 입력하세요.\n");
+            continue;
+        }
+
+        if (guess < target)
+            printf("더 큽니다.\n");
+        else if (guess > target)
+            printf("더 작습니다.\n");
+        else {
+            printf("정답입니다! 숫자는 %d였습니다.\n\n", target);
             break;
         }
     }
+}
 
+int main() {
+    int money = 10000;
+    int choice;
+
+    srand(time(NULL));
+
+    printf("로또 시뮬레이션 게임 시작. 초기 자금: %d원\n\n", money);
+
+    while (money > 0) {
+        printf("====== 메뉴 ======\n");
+        printf("1. 로또 구매\n");
+        printf("2. 숫자 맞추기 게임\n");
+        printf("3. 종료\n");
+        printf("선택: ");
+        scanf("%d", &choice);
+
+        if (choice == 1)
+            playLotto(&money);
+        else if (choice == 2)
+            playNumberGuess();
+        else if (choice == 3)
+            break; 
+        else
+            printf("잘못된 선택입니다.\n\n");
+    }
+
+    printf("\n게임 종료. 최종 자금: %d원\n", money);
     return 0;
 }
