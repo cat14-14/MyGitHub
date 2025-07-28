@@ -2,10 +2,10 @@ n = int(input())
 a = [[0]*n for _ in range(n)]
 
 num = 1
-for j in range(n):
-    for i in range(n-1, -1, -1):
-        a[i][j] = num
+for col in range(n):
+    for row in range(n):
+        a[row][col] = num
         num += 1
 
-for row in a:
-    print(*row)
+for row in reversed(range(n)):
+    print(*a[row])

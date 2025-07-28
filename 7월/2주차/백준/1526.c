@@ -4,10 +4,10 @@ int is_lucky(int n) {
     while (n > 0) {
         int digit = n % 10;
         if (digit != 4 && digit != 7)
-            return 0; // 금민수가 아님
+            return 0; 
         n /= 10;
     }
-    return 1; // 금민수임
+    return 1; 
 }
 
 int main(void)
@@ -17,7 +17,7 @@ int main(void)
 
     int max = 0;
 
-    while (n >= max)  // n부터 4까지 내려가면서 찾음
+    while (n >= max)
     {
         if (is_lucky(n)) {
             max = n;
