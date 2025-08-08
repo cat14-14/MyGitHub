@@ -1,20 +1,17 @@
 #include <stdio.h>
 
-int main(void)
-{
+int main() {
     int A, B, N;
     scanf("%d %d %d", &A, &B, &N);
 
     A %= B;
-
-    for (int i = 1; i <= N; i++) {
+    for (int i = 0; i < N - 1; i++) {
         A *= 10;
-        int digit = A / B;
         A %= B;
-
-        if (i == N)
-            printf("%d\n", digit);
     }
+
+    A *= 10;
+    printf("%d\n", A / B);
 
     return 0;
 }
