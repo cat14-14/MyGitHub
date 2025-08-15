@@ -1,11 +1,16 @@
 #include <stdio.h>
+int sum = 0;
 int hanio(int n, int f, int e, int t)
 {
-    int sum = 0;
     if(n == 1)
-        return sum;
+    {
+        printf("%d -> %d\n", f, t);
+        sum++;
+        return 1;
+    }
     hanio(n-1, f, t, e);
-    sum+=1;
+    printf("%d -> %d\n", f, t);
+    sum++;
     hanio(n-1, t, e, f);
 }
 int main(void)
@@ -13,4 +18,5 @@ int main(void)
     int n;
     scanf("%d", &n);
     printf("%d", hanio(n, 1, 3, 2));
+    printf("%d", sum);
 }
