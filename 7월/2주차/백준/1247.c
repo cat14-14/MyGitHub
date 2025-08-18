@@ -5,15 +5,15 @@ int main(void)
     long long int n = 0;
     long long int a[1000000];
 
-    for (int t = 0; t < 3; t++)  // 총 3개의 테스트 케이스
+    for (int t = 0; t < 3; t++)
     {
-        scanf("%lld", &n);  // 각 테스트 케이스의 숫자 개수
-        long long int sum = 0;  // 합 초기화
+        scanf("%lld", &n);
+        long long int sum = 0;
 
         for (int i = 0; i < n; i++)
         {
-            scanf("%lld", &a[i]);     // 정수 입력
-            sum += a[i];            // 합 누적
+            scanf("%lld", &a[i]);
+            sum += a[i];
         }
 
         if (sum == 0)

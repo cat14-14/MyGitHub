@@ -7,8 +7,6 @@ int main(void) {
 
     int count = 0;
     int len = strlen(str);
-
-    // 개행 제거
     if (str[len - 1] == '\n') {
         str[len - 1] = '\0';
         len--;

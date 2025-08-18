@@ -1,7 +1,5 @@
 #include <stdio.h>
 #include <stdbool.h>
-
-// 소수 판별 함수
 bool isPrime(int num) {
     if (num < 2) return false;
     for (int i = 2; i * i <= num; i++) {
@@ -19,7 +17,7 @@ int main() {
         if (isPrime(i)) {
             sum += i;
             if (min == -1) {
-                min = i; // 첫 번째 소수 발견 시 저장
+                min = i;
             }
         }
     }

@@ -5,7 +5,7 @@ int main(void)
     int A, B;
     scanf("%d %d", &A, &B);
 
-    int sequence[1001]; // 수열의 최대 길이 1000을 넘지 않음
+    int sequence[1001];
     int idx = 0;
 
     for (int i = 1; idx < B; i++) {

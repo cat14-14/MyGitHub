@@ -11,15 +11,11 @@ int main(void)
         scanf("%d %d", &n, &m);
 
         int power, maxN = 0, maxM = 0;
-
-        // 세준 병사들의 전투력
         for (int j = 0; j < n; j++) {
             scanf("%d", &power);
             if (power > maxN)
                 maxN = power;
         }
-
-        // 세비 병사들의 전투력
         for (int j = 0; j < m; j++) {
             scanf("%d", &power);
             if (power > maxM)
@@ -27,9 +23,9 @@ int main(void)
         }
 
         if (maxN >= maxM)
-            printf("S\n"); // 세준 승
+            printf("S\n");
         else
-            printf("B\n"); // 세비 승
+            printf("B\n");
     }
 
     return 0;

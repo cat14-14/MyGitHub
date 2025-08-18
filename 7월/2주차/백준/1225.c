@@ -3,7 +3,7 @@
 
 int main(void)
 {
-    char a[100000], b[100000];  // 문자열로 입력 받기
+    char a[100000], b[100000];
     long long int sum = 0;
 
     scanf("%s %s", a, b);
