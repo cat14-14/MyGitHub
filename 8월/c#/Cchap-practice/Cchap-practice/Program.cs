@@ -1,6 +1,8 @@
-﻿using System;
+﻿namespace Cchap_practice;
 
-class Cchap_practice
+using System;
+
+internal class Program
 {
     static void Main()
     {
