@@ -1,10 +1,8 @@
-﻿namespace Cchap_practice;
+﻿using System;
 
-using System;
-
-internal class Program
+class C1
 {
-    static void Main()
+    public static void Main()
     {
         
     }
