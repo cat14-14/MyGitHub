@@ -1,0 +1,15 @@
+<head>
+<style>#demo{padding-left:30px;border:1px solid #ccc; background:lightyellow;width:400px;}</style></head>
+<body>
+<h2>JavaScript For Of Loop</h2>
+<ul id="demo"></ul>
+<script>
+const cars = ["BMW", "Volvo", "Mini"];
+let $resultUl = document.getElementById("demo");
+let text="";
+for (let item of cars) {
+  text += "<li>"+ item + "</li>";
+}
+$resultUl.innerHTML = text;
+</script>
+</body>
