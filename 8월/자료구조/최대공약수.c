@@ -8,7 +8,7 @@ int main(void)
     {
         if(a%i==0 && b%i==0)
         {
-            c = d;
+            c = i;
         }
     }
     printf("%d", c);
