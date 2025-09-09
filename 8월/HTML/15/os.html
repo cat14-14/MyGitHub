@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Bulwark OS • HUD mockup v0</title>
+  <style>
+    :root{
+      --bg:#0B0F14; --surface:#11161D; --text:#E6ECF2; --muted:#9AA7B3;
+      --primary:#3EA0FF; --ok:#38D27A; --warn:#FFB020; --critical:#FF5A5A;
+      --radius:14px; --gap:12px; --panel:rgba(255,255,255,0.22); --backdrop:rgba(0,0,0,0.45);
+      --glass-blur:16px;
+      --thermal-alpha:0.4; /* 0~1 */
+    }
+    *{box-sizing:border-box} html,body{height:100%;margin:0;background:var(--bg);color:var(--text);font-family:system-ui, Inter, "Noto Sans KR", sans-serif}
+    .app{position:relative; height:100vh; overflow:hidden}
+    .topbar{position:absolute; inset:12px 12px auto 12px; height:48px; display:flex; align-items:center; justify-content:space-between; padding:8px 12px; background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03)); border-radius:12px; backdrop-filter:blur(var(--glass-blur)); border:1px solid rgba(255,255,255,.12)}
+    .topbar .left{display:flex; align-items:center; gap:12px}
+    .logo{display:flex; align-items:center; gap:8px; font-weight:700; letter-spacing:.6px}
+    .logo::before{content:""; width:20px; height:20px; border-radius:50%; background:conic-gradient(from 0deg, #3EA0FF, #38D27A, #FFB020, #3EA0FF)}
+    .mode-pill{padding:4px 10px; border-radius:999px; font-size:12px; background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.18)}
+    .topbar .center{display:flex; align-items:center; gap:12px; opacity:.95}
+    .battery{display:flex; align-items:center; gap:6px; font-variant-numeric:tabular-nums}
+    .battery svg{width:26px; height:14px}
+    .time{opacity:.9; font-weight:600}
+    .team{display:flex; align-items:center; gap:10px}
+    .member{display:flex; align-items:center; gap:6px; padding:4px 8px; border-radius:999px; background:rgba(255,255,255,.10); border:1px solid rgba(255,255,255,.16)}
+    .avatar{width:16px; height:16px; border-radius:50%; background:#2a3340; display:inline-block; position:relative}
+    .state{font-size:11px; padding:2px 6px; border-radius:999px}
+    .state.ok{background:rgba(56,210,122,.16); color:#8ee7b2}
+
+    .canvas{position:absolute; inset:72px 12px 86px 12px; border-radius:14px; overflow:hidden; background:radial-gradient(1200px 800px at 50% 55%, rgba(255,255,255,.04), rgba(0,0,0,0)); outline:1px solid rgba(255,255,255,.08)}
+    .hud{position:absolute; inset:0; pointer-events:none}
+
+    /* Thermal overlay (simulated) */
+    .thermal-overlay{position:absolute; inset:0; opacity:0; transition:opacity .25s ease; mix-blend-mode:screen; background:linear-gradient(180deg, rgba(0,0,0,.0), rgba(0,0,0,.0))}
+    .app.mode-thermal .thermal-overlay{opacity:calc(var(--thermal-alpha))}
+    .palette-wh{filter:grayscale(100%) brightness(1.15) contrast(1.2)}
+    .palette-bh{filter:grayscale(100%) invert(100%) brightness(1.2) contrast(1.25)}
+    .palette-iron{filter:hue-rotate(310deg) saturate(2.5) contrast(1.15)}
+
+    /* Map overlay (placeholder) */
+    .map-overlay{position:absolute; inset:0; opacity:0; transition:opacity .25s ease; background:
+      linear-gradient(90deg, rgba(255,255,255,.06) 1px, transparent 1px),
+      linear-gradient(0deg, rgba(255,255,255,.06) 1px, transparent 1px),
+      linear-gradient(180deg, rgba(62,160,255,.12), rgba(62,160,255,.08));
+      background-size: 40px 40px, 40px 40px, 100% 100%;
+    }
+    .app.mode-map .map-overlay{opacity:.85}
+
+    /* Side menu */
+    .sidemenu{position:absolute; right:12px; top:72px; bottom:86px; width:320px; transform:translateX(100%); transition:transform .25s ease;}
+    .sidemenu.open{transform:translateX(0)}
+    .sidemenu .panel{height:100%; padding:12px; border-radius:14px; background:var(--panel); border:1px solid rgba(255,255,255,.16); backdrop-filter:blur(var(--glass-blur)); overflow:auto}
+    .panel h3{margin:6px 0 10px 0; font-size:14px; text-transform:uppercase; letter-spacing:.8px; color:#b8c6d4}
+    .field{margin:10px 0}
+    .field label{display:block; font-size:12px; color:var(--muted); margin-bottom:6px}
+    .row{display:flex; gap:8px; align-items:center}
+    .seg{display:flex; gap:6px; flex-wrap:wrap}
+    .seg button{padding:6px 10px; background:rgba(255,255,255,.10); color:var(--text); border:1px solid rgba(255,255,255,.16); border-radius:10px; cursor:pointer}
+    .seg button.active{background:rgba(62,160,255,.20); border-color:rgba(62,160,255,.55)}
+    input[type=range]{width:100%}
+    .badge{display:inline-block; padding:2px 8px; border-radius:999px; border:1px solid rgba(255,255,255,.2); background:rgba(255,255,255,.08); font-size:12px}
+
+    /* Bottom cluster */
+    .bottom{position:absolute; left:12px; bottom:12px; display:flex; gap:12px; align-items:flex-end}
+    .card{background:var(--panel); border:1px solid rgba(255,255,255,.16); backdrop-filter:blur(var(--glass-blur)); border-radius:14px; padding:10px 12px; box-shadow:0 6px 24px rgba(0,0,0,.25)}
+    .comms{display:flex; align-items:center; gap:10px; min-width:160px}
+    .bar{width:10px; height:18px; background:linear-gradient(to top, rgba(62,160,255,.8), rgba(62,160,255,.2)); border-radius:4px; animation:pulse 1.4s infinite}
+    .ptt{margin-left:auto; padding:3px 8px; border-radius:999px; background:rgba(62,160,255,.16); border:1px solid rgba(62,160,255,.45); font-size:12px}
+    .comms.live{outline:2px solid rgba(56,210,122,.45)}
+    @keyframes pulse{0%,100%{opacity:.65}50%{opacity:1}}
+
+    .alert{min-width:220px; border-left:4px solid var(--ok)}
+    .alert.critical{border-left-color:var(--critical)}
+
+    .wave{width:240px; height:56px; position:relative; overflow:hidden}
+    .wave canvas{position:absolute; inset:0}
+
+    /* Command strip (bottom center hints) */
+    .cmd{position:absolute; left:50%; transform:translateX(-50%); bottom:12px; background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.16); border-radius:999px; padding:8px 12px; font-size:12px; display:flex; gap:12px; backdrop-filter:blur(10px)}
+    .kbd{padding:2px 6px; border-radius:6px; border:1px solid rgba(255,255,255,.24); background:rgba(255,255,255,.08)}
+
+    /* Toast */
+    .toasts{position:absolute; right:16px; bottom:82px; display:flex; flex-direction:column; gap:8px}
+    .toast{background:rgba(0,0,0,.7); color:#fff; padding:10px 12px; border-radius:10px; font-size:13px; border:1px solid rgba(255,255,255,.18); box-shadow:0 6px 24px rgba(0,0,0,.35)}
+
+    /* Help overlay */
+    .help{position:absolute; inset:0; display:none; align-items:center; justify-content:center; background:var(--backdrop)}
+    .help .panel{width:min(720px,92%)}
+    .help ul{margin:8px 0 0 16px; line-height:1.8}
+    .help.show{display:flex}
+
+    /* Modes label tint */
+    .mode-pill.normal{color:#cfe2ff}
+    .mode-pill.thermal{color:#ffd2b3}
+    .mode-pill.map{color:#bfe7ff}
+  </style>
+</head>
+<body>
+  <div class="app mode-normal palette-iron">
+    <header class="topbar">
+      <div class="left">
+        <div class="logo">IRIS</div>
+        <div class="mode-pill normal" id="modePill">NORMAL</div>
+      </div>
+      <div class="center">
+        <div class="battery" title="배터리">
+          <svg viewBox="0 0 50 24" aria-hidden="true"><rect x="1" y="5" rx="4" ry="4" width="40" height="14" fill="none" stroke="currentColor" opacity=".7"/><rect x="42" y="9" width="6" height="6" rx="2" fill="currentColor" opacity=".7"/><rect x="3" y="7" width="32" height="10" rx="3" fill="currentColor" opacity=".8"/></svg>
+          <span id="batteryPct">100%</span>
+        </div>
+        <div class="time" id="clock">--:--</div>
+      </div>
+      <div class="right team">
+        <div class="member"><span class="avatar"></span><span class="callsign">ALP</span><span class="state ok">OK</span></div>
+        <div class="member"><span class="avatar"></span><span class="callsign">BRV</span><span class="state ok">OK</span></div>
+        <div class="member"><span class="avatar"></span><span class="callsign">OPS</span><span class="state ok">OK</span></div>
+      </div>
+    </header>
+
+    <main class="canvas" id="canvas">
+      <!-- pass-through background is the page bg itself -->
+      <div class="thermal-overlay" id="thermal"></div>
+      <div class="map-overlay" id="map"></div>
+      <div class="hud" id="hud"></div>
+    </main>
+
+    <aside class="sidemenu" id="menu">
+      <div class="panel">
+        <div class="section section-normal" data-section="normal">
+          <h3>Normal</h3>
+          <div class="field">
+            <label>Display</label>
+            <div class="seg"><button disabled>Brightness</button><button disabled>Record</button><button disabled>Safe-Dim</button></div>
+          </div>
+          <div class="field">
+            <label>Comms</label>
+            <div class="seg"><button disabled>Channel: ALPHA</button></div>
+          </div>
+        </div>
+        <div class="section section-thermal" data-section="thermal" style="display:none">
+          <h3>Thermal</h3>
+          <div class="field">
+            <label>Palette</label>
+            <div class="seg" id="paletteSeg">
+              <button data-pal="wh">WhiteHot</button>
+              <button data-pal="bh">BlackHot</button>
+              <button class="active" data-pal="iron">Ironbow</button>
+            </div>
+          </div>
+          <div class="field">
+            <label>Alpha <span id="alphaVal">40%</span></label>
+            <input id="alpha" type="range" min="0" max="100" value="40" />
+            <div class="row" style="opacity:.8;font-size:12px">단축키: [ / ] 로 조절</div>
+          </div>
+          <div class="field">
+            <label>NUC</label>
+            <div class="seg"><button id="btnNUC">Trigger NUC</button><span class="badge">Auto</span></div>
+          </div>
+          <div class="field">
+            <label>Module</label>
+            <div class="seg"><span class="badge">Mounted</span><span class="badge">Flipped</span></div>
+          </div>
+        </div>
+        <div class="section section-map" data-section="map" style="display:none">
+          <h3>Map</h3>
+          <div class="field"><label>Layers</label><div class="seg"><button class="active">Vector</button><button>Satellite</button><button>Contour</button><button>Friendlies</button></div></div>
+          <div class="field"><label>Zoom</label><div class="seg"><button id="zoomIn">+</button><button id="zoomOut">-</button><button id="fit">Fit</button></div></div>
+        </div>
+      </div>
+    </aside>
+
+    <div class="bottom">
+      <div class="card comms" id="comms"><div class="bar"></div><div>CH: ALPHA</div><div class="ptt">PTT</div></div>
+      <div class="card alert critical" id="alert"><strong>Alert:</strong> Battery low mock (demo)</div>
+      <div class="card wave"><canvas id="wave"></canvas></div>
+    </div>
+
+    <div class="cmd" aria-hidden="true">
+      <span><span class="kbd">N</span> Normal</span>
+      <span><span class="kbd">T</span> Thermal</span>
+      <span><span class="kbd">M</span> Map</span>
+      <span><span class="kbd">Tab</span> Menu</span>
+      <span><span class="kbd">C</span> PTT</span>
+      <span><span class="kbd">F1</span> Help</span>
+    </div>
+
+    <div class="toasts" id="toasts"></div>
+
+    <div class="help" id="help">
+      <div class="panel card">
+        <h3>단축키</h3>
+        <ul>
+          <li>N/T/M : 모드 전환</li>
+          <li>Tab : 우측 메뉴 열기/닫기</li>
+          <li>C : PTT(누르는 동안)</li>
+          <li>[ / ] : Thermal 알파 - / +</li>
+          <li>1 / 2 / 3 : Thermal 팔레트 (WH / BH / Ironbow)</li>
+          <li>F1 : 이 도움말 토글</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const app = document.querySelector('.app');
+    const menu = document.getElementById('menu');
+    const toasts = document.getElementById('toasts');
+    const modePill = document.getElementById('modePill');
+    const thermal = document.getElementById('thermal');
+    const mapov = document.getElementById('map');
+    const help = document.getElementById('help');
+    const alpha = document.getElementById('alpha');
+    const alphaVal = document.getElementById('alphaVal');
+    const paletteSeg = document.getElementById('paletteSeg');
+    const comms = document.getElementById('comms');
+
+    // simple wave animation
+    const wave = document.getElementById('wave');
+    const wctx = wave.getContext && wave.getContext('2d');
+    function resizeWave(){ wave.width=wave.clientWidth; wave.height=wave.clientHeight }
+    window.addEventListener('resize', resizeWave); resizeWave();
+    let t=0; function drawWave(){ if(!wctx) return; wctx.clearRect(0,0,wave.width,wave.height); wctx.globalAlpha=.8; wctx.lineWidth=2; wctx.beginPath(); for(let x=0;x<wave.width;x++){ const y = wave.height/2 + Math.sin((x+t)/24)*10 + Math.sin((x+t)/9)*4; if(x===0) wctx.moveTo(x,y); else wctx.lineTo(x,y);} wctx.strokeStyle='rgba(62,160,255,.9)'; wctx.stroke(); t+=2; requestAnimationFrame(drawWave) } drawWave();
+
+    function toast(msg){ const el=document.createElement('div'); el.className='toast'; el.textContent=msg; toasts.appendChild(el); setTimeout(()=>{ el.style.opacity='0'; setTimeout(()=>el.remove(),300); }, 1600) }
+
+    function setMode(m){ app.classList.remove('mode-normal','mode-thermal','mode-map'); app.classList.add('mode-'+m); modePill.textContent=m.toUpperCase(); modePill.className='mode-pill '+m; // menu sections
+      document.querySelectorAll('[data-section]').forEach(sec=>{ sec.style.display = (sec.dataset.section===m)?'block':'none' });
+      if(m==='thermal'){ toast('THERMAL • '+currentPaletteLabel()+' • α '+Math.round(alpha.value)+'%') }
+      if(m==='map'){ toast('MAP') }
+      if(m==='normal'){ toast('NORMAL') }
+    }
+
+    function currentPaletteLabel(){ const btn=document.querySelector('#paletteSeg button.active'); return btn?btn.textContent:'Ironbow' }
+
+    // thermal alpha
+    function applyAlpha(){ const v=Number(alpha.value)/100; document.documentElement.style.setProperty('--thermal-alpha', v.toString()); alphaVal.textContent=Math.round(Number(alpha.value))+'%'; }
+    alpha.addEventListener('input', applyAlpha); applyAlpha();
+
+    // palette change
+    paletteSeg.addEventListener('click', (e)=>{ if(e.target.tagName!=='BUTTON') return; paletteSeg.querySelectorAll('button').forEach(b=>b.classList.remove('active')); e.target.classList.add('active'); const pal=e.target.dataset.pal; app.classList.remove('palette-wh','palette-bh','palette-iron'); app.classList.add('palette-'+pal); toast('Palette: '+e.target.textContent) })
+
+    // help
+    function toggleHelp(){ help.classList.toggle('show') }
+
+    // clock
+    function tick(){ const d=new Date(); const two=n=>n.toString().padStart(2,'0'); document.getElementById('clock').textContent = two(d.getHours())+':'+two(d.getMinutes()); requestAnimationFrame(()=>{}); }
+    setInterval(tick, 1000); tick();
+
+    // keyboard
+    let ptt=false; let menuOpen=false; let mode='normal'; setMode(mode);
+    window.addEventListener('keydown', (e)=>{
+      if(e.key==='F1'){ e.preventDefault(); toggleHelp(); return }
+      if(e.key==='Tab'){ e.preventDefault(); menuOpen=!menuOpen; menu.classList.toggle('open', menuOpen); return }
+      if(e.key==='n' || e.key==='N'){ mode='normal'; setMode('normal'); return }
+      if(e.key==='t' || e.key==='T'){ mode='thermal'; setMode('thermal'); return }
+      if(e.key==='m' || e.key==='M'){ mode='map'; setMode('map'); return }
+      if(e.key==='c' || e.code==='KeyC'){ if(!ptt){ ptt=true; comms.classList.add('live'); toast('PTT LIVE'); } }
+      if(e.key==='['){ alpha.value = Math.max(0, Number(alpha.value)-5); applyAlpha() }
+      if(e.key===']'){ alpha.value = Math.min(100, Number(alpha.value)+5); applyAlpha() }
+      if(e.key==='1'){ document.querySelector('#paletteSeg [data-pal="wh"]').click() }
+      if(e.key==='2'){ document.querySelector('#paletteSeg [data-pal="bh"]').click() }
+      if(e.key==='3'){ document.querySelector('#paletteSeg [data-pal="iron"]').click() }
+    });
+    window.addEventListener('keyup', (e)=>{ if((e.key==='c'||e.code==='KeyC') && ptt){ ptt=false; comms.classList.remove('live'); toast('PTT HOLD') } });
+
+    // buttons
+    document.getElementById('btnNUC').addEventListener('click', ()=>toast('NUC triggered'))
+    ;['zoomIn','zoomOut','fit'].forEach(id=>{ const el=document.getElementById(id); if(el) el.addEventListener('click', ()=>toast('Map: '+el.textContent)) })
+  </script>
+</body>
+</html>

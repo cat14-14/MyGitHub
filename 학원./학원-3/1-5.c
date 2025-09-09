@@ -1,7 +1,0 @@
-#include <stdio.h>
-int main(void)
-{
-    int a,b,c;
-    scanf("%d %d %d", &a, &b, &c);
-    printf("%dx%d+%d=%d\n", a,b,c,a*b+c);
-}
