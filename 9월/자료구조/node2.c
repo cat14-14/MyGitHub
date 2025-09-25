@@ -37,8 +37,8 @@ int main(void) {
         count++;
         p = p->next;
     }
-        double avg = (double)sum / count;
-        printf("평균값: %.2f\n", avg);
+    double avg = (double)sum / count;
+    printf("평균값: %.2f\n", avg);
     free(head);
     free(first);
     free(second);
