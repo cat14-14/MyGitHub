@@ -5,6 +5,7 @@ int main(void){
     for(int i=0; i<a; i++){
         scanf("%d", &b[i]);
     }
+    
     int pivot = 0;
     int leftp;
     int left = 1;
