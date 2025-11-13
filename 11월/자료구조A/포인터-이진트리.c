@@ -77,6 +77,8 @@ int main(void) {
     for (int i = 0; i < MAX_NODES; i++) {
         tree[i] = NULL;
     }
+    // if(l < n) node[i] -> l = node[l];
+    // if(r < n) node[i] -> r = node[r];
 
     // 완전 이진 트리의 레벨 순서대로 데이터 삽입
     insert(1); // 인덱스 0 (루트)
