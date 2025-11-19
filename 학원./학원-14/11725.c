@@ -1,5 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
+#define Max 100
+
+
 
 int main(void){
 	int N;
@@ -41,6 +44,4 @@ int main(void){
 
 	free(head); free(to); free(nxt); free(parent); free(q);
 	return 0;
-
-    
 }

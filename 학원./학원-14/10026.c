@@ -13,7 +13,7 @@ void dfs1(int r, int c, char color){
 		int nr = r + dr[k];
 		int nc = c + dc[k];
 		if(nr < 0 || nr >= N || nc < 0 || nc >= N) continue;
-		if(!vis1[nr][nc] && a[nr][nc] == color) dfs1(nr, nc, color);
+		if(!vis1[nr][nc] && a[nr][nc] == color) dfs1(nr, nc, color);	
 	}
 }
 
@@ -51,5 +51,6 @@ int main(void){
 		}
 	}
 	printf("%d %d\n", cnt1, cnt2);
+
 	return 0;
 }

@@ -73,7 +73,10 @@
     "stdio.h": "c",
     "2693.C": "cpp",
     "10872.C": "cpp",
-    "1-1.C": "cpp"
+    "1-1.C": "cpp",
+    "array": "c",
+    "string": "c",
+    "string_view": "c"
   },
 
   // ✅ Tailwind CSS 관련 경고 제거 설정
