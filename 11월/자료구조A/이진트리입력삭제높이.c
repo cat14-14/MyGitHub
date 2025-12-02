@@ -43,7 +43,7 @@ Node* delete_node(Node* root, int key) {
 
     if (key < root->data) {
         root->left = delete_node(root->left, key);
-    } else if (key > root->data) {  
+    } else if (key > root->data) {
         root->right = delete_node(root->right, key);
     } else {
         if (root->left == NULL && root->right == NULL) {
@@ -67,11 +67,11 @@ Node* delete_node(Node* root, int key) {
     return root;
 }
 
-void inorder(Node* root) {
-    if (root == NULL) return;
-    inorder(root->left);
-    printf("%d ", root->data);
-    inorder(root->right);
+int height(Node* node) {
+    if (node == NULL) return 0;
+    int hl = height(node->left);
+    int hr = height(node->right);
+    return (hl > hr ? hl : hr) + 1;
 }
 
 int main(void) {
@@ -89,7 +89,6 @@ int main(void) {
     scanf("%d", &key);
     root = delete_node(root, key);
 
-    inorder(root);
-    printf("\n");
+    printf("%d\n", height(root));
     return 0;
 }

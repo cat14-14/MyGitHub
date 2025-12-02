@@ -38,40 +38,18 @@ Node* insert_node(Node* root, int data) {
     return root;
 }
 
-Node* delete_node(Node* root, int key) {
-    if (root == NULL) return NULL;
-
-    if (key < root->data) {
-        root->left = delete_node(root->left, key);
-    } else if (key > root->data) {  
-        root->right = delete_node(root->right, key);
-    } else {
-        if (root->left == NULL && root->right == NULL) {
-            free(root);
-            return NULL;
-        } else if (root->left == NULL) {
-            Node* temp = root->right;
-            free(root);
-            return temp;
-        } else if (root->right == NULL) {
-            Node* temp = root->left;
-            free(root);
-            return temp;
+Node* lca(Node* root, int a, int b) {
+    Node* cur = root;
+    while (cur != NULL) {
+        if (a < cur->data && b < cur->data) {
+            cur = cur->left;
+        } else if (a > cur->data && b > cur->data) {
+            cur = cur->right;
         } else {
-            Node* succ = root->right;
-            while (succ->left != NULL) succ = succ->left;
-            root->data = succ->data;
-            root->right = delete_node(root->right, succ->data);
+            return cur;
         }
     }
-    return root;
-}
-
-void inorder(Node* root) {
-    if (root == NULL) return;
-    inorder(root->left);
-    printf("%d ", root->data);
-    inorder(root->right);
+    return NULL;
 }
 
 int main(void) {
@@ -85,11 +63,12 @@ int main(void) {
         root = insert_node(root, x);
     }
 
-    int key;
-    scanf("%d", &key);
-    root = delete_node(root, key);
+    int a, b;
+    scanf("%d %d", &a, &b);
 
-    inorder(root);
-    printf("\n");
+    Node* anc = lca(root, a, b);
+    if (anc != NULL) printf("%d\n", anc->data);
+    else printf("-1\n");
+
     return 0;
 }
